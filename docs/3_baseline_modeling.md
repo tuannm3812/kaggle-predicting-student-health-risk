@@ -58,3 +58,42 @@ Practical promotion threshold for the next notebook:
 - The prediction share should not collapse almost entirely into `at-risk`.
 - Minority-class recall for `fit` and `unhealthy` should be inspected before
   submitting.
+
+## Current Baseline Review
+
+The public v3 baseline notebook completed successfully and generated a valid
+`submission.csv`.
+
+Cross-validation summary from the completed Kaggle run:
+
+| Metric | Mean / Overall |
+| --- | ---: |
+| Accuracy | `0.8785` |
+| Balanced accuracy | `0.9091` |
+| Macro F1 | `0.7610` |
+| Weighted F1 | `0.8910` |
+
+Per-class OOF recall:
+
+| Class | Recall | Precision | F1 |
+| --- | ---: | ---: | ---: |
+| `at-risk` | `0.8701` | `0.9875` | `0.9251` |
+| `fit` | `0.9226` | `0.5055` | `0.6531` |
+| `unhealthy` | `0.9345` | `0.5657` | `0.7048` |
+
+The class-balanced HGB baseline intentionally trades majority-class accuracy
+for much higher minority-class recall. This is useful if the competition metric
+rewards class balance, but it may be too aggressive if the official leaderboard
+metric is plain accuracy.
+
+Submission prediction mix:
+
+| Predicted class | Share |
+| --- | ---: |
+| `at-risk` | `75.71%` |
+| `unhealthy` | `13.90%` |
+| `fit` | `10.39%` |
+
+Decision: good enough for a first leaderboard calibration submission, not a
+champion candidate. The next refinement should compare an unweighted
+accuracy-oriented HGB/CatBoost baseline against this class-balanced baseline.
