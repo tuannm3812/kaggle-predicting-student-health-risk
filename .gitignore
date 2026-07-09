@@ -1,0 +1,29 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+
+# Kaggle data
+data/train.csv
+data/test.csv
+data/sample_submission.csv
+data/*.zip
+
+# Generated artifacts
+predictions/
+submission.csv
+scratch/
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

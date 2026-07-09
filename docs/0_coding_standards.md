@@ -1,0 +1,59 @@
+# Coding Standards
+
+## Repository Scope
+
+Use a notebook-first Kaggle workflow with lightweight documentation:
+
+- `notebooks/` for EDA, baseline modeling, tuning, and final submission logic.
+- `docs/` for durable findings and decisions.
+- `data/` for local Kaggle files. Raw data is ignored.
+- `predictions/` for OOF and test predictions. Generated predictions are
+  ignored.
+- `scratch/` for temporary automation scripts. Generated helpers are ignored.
+
+## Document Naming
+
+- `0_coding_standards.md`
+- `1_instructions.md`
+- `2_eda_insights.md`
+- `3_baseline_modeling.md`
+- `4_model_optimization_and_ensemble.md`
+- `5_implementation_plan.md`
+- `6_submission_manifest.md`
+- `7_submission_quota_strategy.md`
+
+Notebook naming:
+
+- `01_eda.ipynb`
+- `02_baseline_modeling.ipynb`
+- `03_model_tuning_and_ensemble.ipynb`
+- `04_hyperparameter_tuning.ipynb`
+
+## Python Style
+
+- Follow PEP 8.
+- Use 4 spaces for indentation.
+- Prefer small reusable functions with type hints.
+- Use Google-style docstrings for reusable utilities.
+- Keep feature engineering fold-safe: target-derived transformations must be fit
+  inside each training fold only.
+
+## Notebook Style
+
+Each notebook should include:
+
+- Purpose statement.
+- Configuration cell near the top.
+- Deterministic seed.
+- Markdown insight cells after important plots or metrics.
+- Relative input-path handling for Kaggle and local execution.
+
+## Plot Style
+
+Use `viridis` as the default color palette or colormap, matching the previous
+episode repos.
+
+## Git Hygiene
+
+Do not commit raw Kaggle data, model dumps, prediction arrays, local
+credentials, temporary scripts, or notebook checkpoints.
