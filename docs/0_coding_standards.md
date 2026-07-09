@@ -47,11 +47,31 @@ Each notebook should include:
 - Deterministic seed.
 - Markdown insight cells after important plots or metrics.
 - Relative input-path handling for Kaggle and local execution.
+- Numbered sections with clear reader-facing headers.
+- A short interpretation after every major EDA or validation block.
+- A final "next moves" section that converts findings into experiments.
+- Public-notebook polish: concise prose, no debug clutter, and output tables
+  that can be read without opening the source code.
+
+For public Kaggle notebooks, prefer this section flow:
+
+1. Problem framing and notebook goal.
+2. Setup and robust input discovery.
+3. Data loading and schema confirmation.
+4. Target or metric framing.
+5. Feature/missingness/drift diagnostics.
+6. Modeling or experiment block.
+7. Validation results and interpretation.
+8. Next actions.
 
 ## Plot Style
 
 Use `viridis` as the default color palette or colormap, matching the previous
 episode repos.
+
+Plots should answer a specific question. Avoid decorative charts; every chart
+should be paired with a concise explanation of what it changes about modeling
+or validation.
 
 ## Git Hygiene
 
