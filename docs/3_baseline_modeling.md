@@ -21,6 +21,12 @@ submissions.
 Use stratified folds for classification unless the target is continuous or
 otherwise specified by the competition metric.
 
+For S6E7, use `health_condition` as the target and stratify over:
+
+- `at-risk`
+- `unhealthy`
+- `fit`
+
 Track:
 
 - Primary competition metric.

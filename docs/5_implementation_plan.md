@@ -18,17 +18,24 @@ single-model baseline first, then only ensemble once OOF evidence supports it.
 
 ## 2. Immediate Blocker
 
-Kaggle API credentials are configured and can list the competition files.
-Download is blocked by `403 Forbidden`, likely because the `tuannm3812` account
-must accept the S6E7 competition rules in the browser.
+Kaggle API credentials are configured and the competition files have been
+downloaded locally.
 
-After rules are accepted:
+To refresh the files:
 
 ```bash
 /Users/tuannm3812/Library/Python/3.9/bin/kaggle competitions files playground-series-s6e7
 /Users/tuannm3812/Library/Python/3.9/bin/kaggle competitions download -c playground-series-s6e7 -p data
 unzip data/playground-series-s6e7.zip -d data
 ```
+
+Confirmed target: `health_condition`.
+
+Confirmed class distribution:
+
+- `at-risk`: 592,561
+- `unhealthy`: 57,724
+- `fit`: 39,803
 
 Then update `docs/1_instructions.md`.
 
@@ -97,10 +104,9 @@ Spend submissions like S6E6:
 
 ## 8. First Day Execution Plan
 
-1. Restore Kaggle credentials.
-2. Download and inspect the competition files.
-3. Fill `docs/1_instructions.md`.
-4. Build `01_eda.ipynb`.
-5. Build `02_baseline_modeling.ipynb` with at least sklearn HGB, LightGBM, and
+1. Run public Kaggle EDA notebook.
+2. Run public Kaggle baseline notebook.
+3. Record notebook links and public run status.
+4. Build `02_baseline_modeling.ipynb` with at least sklearn HGB, LightGBM, and
    CatBoost.
-6. Generate first OOF metrics and a sanity-check submission.
+5. Generate first OOF metrics and a sanity-check submission.

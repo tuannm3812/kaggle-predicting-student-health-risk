@@ -31,24 +31,33 @@ Fill these in immediately after data access:
 | Item | Status |
 | --- | --- |
 | Evaluation metric | To confirm |
-| Target column | To confirm after download |
+| Target column | `health_condition` |
 | Submission column name | To confirm |
-| Train file | `train.csv`, 62.7 MB |
-| Test file | `test.csv`, 24.6 MB |
+| Train file | `train.csv`, 62.7 MB, 690,088 rows |
+| Test file | `test.csv`, 24.6 MB, 295,753 rows |
 | Sample submission | `sample_submission.csv`, 4.4 MB |
-| Train row count | To confirm after download |
-| Test row count | To confirm after download |
-| Missing-value pattern | To confirm |
-| Target distribution | To confirm |
+| Train row count | 690,088 |
+| Test row count | 295,753 |
+| Missing-value pattern | 449,496 train missing cells; 192,642 test missing cells |
+| Target distribution | `at-risk`: 592,561; `unhealthy`: 57,724; `fit`: 39,803 |
 | Competition deadline | To confirm |
 | Daily submission quota | To confirm |
 
 ## Expected Input Files
 
-Most Playground competitions use:
-
 - `train.csv`
 - `test.csv`
 - `sample_submission.csv`
 
-Confirm exact filenames with the Kaggle API before writing the first notebook.
+## Columns
+
+Target:
+
+- `health_condition`
+
+Features:
+
+- Numeric: `sleep_duration`, `heart_rate`, `bmi`, `calorie_expenditure`,
+  `step_count`, `exercise_duration`, `water_intake`
+- Categorical: `diet_type`, `stress_level`, `sleep_quality`,
+  `physical_activity_level`, `smoking_alcohol`, `gender`
