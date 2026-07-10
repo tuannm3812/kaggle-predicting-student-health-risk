@@ -75,3 +75,24 @@ read.
 
 Only submit the next candidate if it improves the likely leaderboard direction
 without collapsing `fit`/`unhealthy` recall.
+
+## Weighting Comparison Result
+
+The v5 baseline notebook answered the weighting question. `hgb_unweighted`
+improved OOF accuracy from the balanced baseline's `0.87850` to `0.96519` and
+restored a more realistic prediction mix.
+
+| Candidate | Accuracy | Macro F1 | Test `at-risk` | Test `fit` | Test `unhealthy` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `hgb_unweighted` | `0.96519` | `0.90275` | `88.61%` | `4.77%` | `6.62%` |
+| `hgb_light_weight` | `0.96438` | `0.90294` | `87.86%` | `5.01%` | `7.13%` |
+| `hgb_balanced` | `0.87850` | `0.76104` | `75.71%` | `10.39%` | `13.90%` |
+
+Leaderboard result: the notebook-generated `hgb_unweighted` submission scored
+`0.85038`, below the balanced baseline score of `0.90603`.
+
+Decision: reject raw accuracy-oriented `hgb_unweighted` as a leaderboard
+direction. The compact comparison remains useful because it shows that local CV
+accuracy is not enough for this competition. Future candidates should preserve
+class-balanced behavior and use prediction mix plus minority recall as hard
+guardrails.

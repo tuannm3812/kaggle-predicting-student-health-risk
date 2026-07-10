@@ -100,3 +100,24 @@ champion candidate. The refined baseline notebook now compares unweighted,
 lightly weighted, and fully balanced HGB candidates in the same public
 notebook. This avoids creating extra public notebooks just to answer the class
 weighting question.
+
+## HGB Weighting Comparison Review
+
+The public v5 baseline notebook compared three HGB class-prior strategies in
+the same public notebook.
+
+| Candidate | Accuracy | Balanced Accuracy | Macro F1 | Test `at-risk` | Test `fit` | Test `unhealthy` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| **`hgb_unweighted`** | **`0.96519`** | `0.85734` | `0.90275` | `88.61%` | `4.77%` | `6.62%` |
+| `hgb_light_weight` | `0.96438` | `0.87067` | **`0.90294`** | `87.86%` | `5.01%` | `7.13%` |
+| `hgb_balanced` | `0.87850` | **`0.90907`** | `0.76104` | `75.71%` | `10.39%` | `13.90%` |
+
+Initial local insight: the fully balanced model over-corrected the class
+imbalance, while the unweighted model was the best accuracy-oriented local
+baseline.
+
+Leaderboard correction: `hgb_unweighted` scored only `0.85038`, below the
+balanced baseline's `0.90603`. Local CV accuracy was therefore misleading for
+leaderboard selection. For now, `hgb_balanced` remains the leaderboard champion
+and future candidates should preserve class-balanced behavior as a primary
+guardrail.
