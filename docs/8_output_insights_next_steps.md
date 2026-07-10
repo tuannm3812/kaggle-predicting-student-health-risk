@@ -96,3 +96,18 @@ direction. The compact comparison remains useful because it shows that local CV
 accuracy is not enough for this competition. Future candidates should preserve
 class-balanced behavior and use prediction mix plus minority recall as hard
 guardrails.
+
+## Leaderboard Improvement Focus
+
+The EDA points to a lifestyle-interaction problem rather than a pure class-prior
+problem. The strongest signals are `stress_level`, `physical_activity_level`,
+`sleep_duration`, `step_count`, `exercise_duration`, `bmi`, `sleep_quality`,
+and `smoking_alcohol`.
+
+Next best direction: add a **CatBoost balanced** section to the existing public
+baseline notebook, using native categorical features and preserving the
+notebook-generated submission workflow.
+
+Do not optimize for local accuracy alone. The failed `hgb_unweighted`
+submission proves that local accuracy can move in the wrong leaderboard
+direction.
