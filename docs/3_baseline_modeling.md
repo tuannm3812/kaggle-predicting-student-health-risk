@@ -16,16 +16,16 @@ submissions.
 | 5 | XGBoost | Diversity check against LightGBM |
 | 6 | CatBoost | Strong handling of categorical features |
 
-The public baseline notebook now implements step 3 as a compact comparison
-rather than a single fixed model:
+The public baseline notebook now keeps HGB as an anchor and adds a stronger
+LGBM/XGB ensemble candidate:
 
-- numeric median imputation with missing-value indicators;
-- categorical most-frequent imputation plus ordinal encoding;
-- unweighted, lightly weighted, and fully balanced
-  `HistGradientBoostingClassifier` candidates;
-- 5-fold stratified validation;
+- row-safe domain features for sleep, activity, stress, BMI, and lifestyle;
+- domain-ordered categorical encodings for health-direction categories;
+- a fully balanced `HistGradientBoostingClassifier` anchor;
+- balanced LightGBM plus balanced XGBoost probability blending;
+- 3-fold stratified validation for public-notebook runtime;
 - accuracy, balanced accuracy, macro F1, weighted F1, prediction mix,
-  confusion matrix, and per-class classification report.
+  confusion matrix, per-class classification report, and blend-weight results.
 
 ## Validation
 
@@ -54,8 +54,8 @@ score alone.
 
 Practical promotion threshold for the next notebook:
 
-- CatBoost/LightGBM/XGBoost should improve macro F1 or balanced accuracy, not
-  only plain accuracy.
+- LightGBM/XGBoost should improve macro F1 or balanced accuracy, not only plain
+  accuracy.
 - The prediction share should not collapse almost entirely into `at-risk`.
 - Minority-class recall for `fit` and `unhealthy` should be inspected before
   submitting.
@@ -121,3 +121,18 @@ balanced baseline's `0.90603`. Local CV accuracy was therefore misleading for
 leaderboard selection. For now, `hgb_balanced` remains the leaderboard champion
 and future candidates should preserve class-balanced behavior as a primary
 guardrail.
+
+## Public Notebook V7 Direction
+
+The next public notebook improves the baseline in one focused direction:
+
+- keep `hgb_balanced_domain` as the continuity anchor;
+- add **domain-ordered features** instead of raw label-only categoricals;
+- train **balanced LGBM** and **balanced XGB** on numeric domain features;
+- sweep LGBM/XGB probability blend weights by OOF balanced accuracy;
+- write `baseline_model_comparison.csv`, `blend_weight_results.csv`,
+  `champion_oof_predictions.csv`, and `submission.csv`.
+
+This borrows the useful modeling lesson from a strong public notebook, but uses
+our own validation discipline, feature names, diagnostics, and champion
+selection rule.

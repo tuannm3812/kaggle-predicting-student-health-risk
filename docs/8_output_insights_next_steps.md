@@ -104,9 +104,9 @@ problem. The strongest signals are `stress_level`, `physical_activity_level`,
 `sleep_duration`, `step_count`, `exercise_duration`, `bmi`, `sleep_quality`,
 and `smoking_alcohol`.
 
-Next best direction: add a **CatBoost balanced** section to the existing public
-baseline notebook, using native categorical features and preserving the
-notebook-generated submission workflow.
+Next best direction: add a **balanced LGBM/XGB domain ensemble** to the
+existing public baseline notebook, using domain-ordered lifestyle features and
+preserving the notebook-generated submission workflow.
 
 Do not optimize for local accuracy alone. The failed `hgb_unweighted`
 submission proves that local accuracy can move in the wrong leaderboard
@@ -127,3 +127,20 @@ The baseline notebook now adds row-safe features before the next public run:
 
 These features are intentionally simple and interpretable. They encode the EDA
 signals without using target leakage or external data.
+
+## LGBM/XGB Ensemble Direction
+
+The next notebook version uses the strongest reusable idea from the public
+reference notebook without copying it:
+
+- encode health-direction categories with **domain order**;
+- combine sleep, activity, BMI, stress, and lifestyle signals into compact
+  features;
+- compare the engineered HGB anchor against a **balanced LGBM/XGB probability
+  blend**;
+- select the blend weight from OOF balanced accuracy;
+- write `baseline_model_comparison.csv` and `blend_weight_results.csv` for
+  review before leaderboard submission.
+
+This should be our next public-notebook run because the current leaderboard gap
+is too large for small HGB weighting changes.

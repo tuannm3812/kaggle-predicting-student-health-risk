@@ -64,24 +64,28 @@ distribution or to the competition metric's implicit class-balance pressure.
 
 ## Highest-Value Next Experiments
 
-### 1. CatBoost Balanced Baseline
+### 1. Balanced LGBM/XGB Domain Ensemble
 
-Use CatBoost because it handles categorical fields natively and can model
-interactions between stress, activity, sleep, and lifestyle categories.
+Use LightGBM and XGBoost because strong public evidence suggests balanced GBDT
+ensembles handle this synthetic tabular problem better than the single HGB
+anchor.
 
 Recommended setup:
 
-- native categorical columns;
-- `auto_class_weights='Balanced'`;
-- 5-fold stratified CV;
-- same prediction-mix diagnostics;
+- **domain-ordered encodings** for stress, sleep quality, activity, diet, and
+  smoking/alcohol;
+- row-safe lifestyle composites for sleep recovery, activity volume, BMI risk,
+  and stress/sleep pressure;
+- balanced LightGBM plus balanced XGBoost;
+- OOF probability blend sweep instead of a hard-coded blend weight;
 - one notebook-generated `submission.csv`.
 
 Promotion gate:
 
 - public score must beat `0.90603`;
 - `fit` and `unhealthy` prediction shares should not collapse;
-- local balanced accuracy or macro F1 should stay competitive.
+- local balanced accuracy or macro F1 should stay competitive;
+- blend diagnostics should explain the selected LGBM/XGB weight.
 
 ### 2. Targeted Interaction Features
 
@@ -119,8 +123,8 @@ minority sensitivity.
 
 ## Next Concrete Move
 
-Extend the existing public baseline notebook with a **CatBoost balanced**
-section and compare it against `hgb_balanced`. Keep the notebook public and
+Extend the existing public baseline notebook with a **balanced LGBM/XGB domain
+ensemble** and compare it against `hgb_balanced`. Keep the notebook public and
 submit only the notebook-generated `submission.csv` if the diagnostics look
 better than the current champion.
 
@@ -130,9 +134,10 @@ The public baseline notebook has been updated for the next run:
 
 - row-safe lifestyle interaction features;
 - balanced HGB with engineered features;
-- balanced CatBoost with native categorical handling;
-- champion selection by balanced accuracy;
+- balanced LGBM/XGB probability ensemble;
+- OOF blend-weight sweep by balanced accuracy;
+- champion selection by balanced accuracy and macro F1;
 - one notebook-generated `submission.csv`.
 
-The run should be submitted only after checking whether CatBoost or engineered
-HGB beats the current `0.90603` public champion direction.
+The run should be submitted only after checking whether the LGBM/XGB ensemble
+or engineered HGB beats the current `0.90603` public champion direction.
