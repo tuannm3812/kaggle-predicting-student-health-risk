@@ -26,3 +26,17 @@ separate steps.
 3. Submit at most one candidate per hypothesis.
 4. Log the score immediately in `docs/6_submission_manifest.md`.
 5. Promote, revise, or reject the hypothesis.
+
+## Notebook-First Submission Rule
+
+For this project, submissions should come from public Kaggle notebook outputs
+whenever possible:
+
+1. Push the notebook with `is_private: false`.
+2. Let Kaggle run it to completion.
+3. Confirm that `/kaggle/working/submission.csv` is produced.
+4. Submit that notebook-generated CSV to the competition.
+5. Record the notebook URL, version, CV metrics, prediction mix, and public
+   score.
+
+Avoid detached local-only submissions unless the notebook run is blocked.
