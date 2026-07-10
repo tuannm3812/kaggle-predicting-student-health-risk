@@ -143,3 +143,23 @@ The public baseline notebook v8 completed and was submitted:
 
 Result: public score `0.94959`, replacing `hgb_balanced` (`0.90603`) as the
 current champion.
+
+## V10 Calibration Sweep Review
+
+Notebook v10 tested a small class-prior calibration sweep on top of the v8
+LGBM/XGB probability blend.
+
+| Candidate | Accuracy | Balanced Accuracy | Macro F1 | Test `at-risk` | Test `fit` | Test `unhealthy` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `calibrated_lgbm_xgb_domain_ensemble` | `0.93726` | **`0.94970`** | `0.86257` | `80.92%` | `7.40%` | `11.67%` |
+| `lgbm_xgb_domain_ensemble` | `0.93746` | `0.94968` | `0.86308` | `80.94%` | `7.37%` | `11.69%` |
+| `hgb_balanced_domain` | **`0.93874`** | `0.94932` | **`0.86510`** | `81.06%` | `7.36%` | `11.58%` |
+
+Best calibration setting:
+
+- `fit_multiplier = 1.12`
+- `unhealthy_multiplier = 1.00`
+
+Decision: **do not submit**. The balanced-accuracy gain over v8 is only
+`+0.000014`, while accuracy and macro F1 both move down. This is too small to
+spend a leaderboard submission under the current quota strategy.

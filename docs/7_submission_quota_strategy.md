@@ -27,6 +27,17 @@ separate steps.
 4. Log the score immediately in `docs/6_submission_manifest.md`.
 5. Promote, revise, or reject the hypothesis.
 
+## Current Champion Gate
+
+Current public champion: `0.94959` from the v8 balanced LGBM/XGB
+domain-feature ensemble.
+
+For small calibration or threshold-style changes, do not submit unless the OOF
+evidence is stronger than a rounding-level improvement. A candidate should
+preferably improve balanced accuracy by at least `0.0002` without reducing macro
+F1 or creating a suspicious prediction mix. The v10 class-prior calibration
+improved balanced accuracy by only `0.000014` and was therefore not submitted.
+
 ## Notebook-First Submission Rule
 
 For this project, submissions should come from public Kaggle notebook outputs
