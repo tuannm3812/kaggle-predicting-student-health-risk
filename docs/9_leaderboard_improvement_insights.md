@@ -4,11 +4,13 @@
 
 | Candidate | Public Score | Decision |
 | --- | ---: | --- |
-| `hgb_balanced` | `0.90603` | Current champion |
+| `lgbm_xgb_domain_ensemble` | `0.94959` | Current champion |
+| `hgb_balanced` | `0.90603` | Former champion |
 | `hgb_unweighted` | `0.85038` | Reject |
 
-The public leaderboard top scores are around `0.951`. We need roughly `+0.045`
-over the current champion to become competitive.
+The public leaderboard top scores are around `0.951`. The v8 domain-feature
+LGBM/XGB ensemble closes most of the original gap and is now within roughly
+`0.0015` of that reference level.
 
 ## Core Lesson
 
@@ -82,7 +84,7 @@ Recommended setup:
 
 Promotion gate:
 
-- public score must beat `0.90603`;
+- public score must beat the current `0.94959` champion;
 - `fit` and `unhealthy` prediction shares should not collapse;
 - local balanced accuracy or macro F1 should stay competitive;
 - blend diagnostics should explain the selected LGBM/XGB weight.
@@ -123,14 +125,14 @@ minority sensitivity.
 
 ## Next Concrete Move
 
-Extend the existing public baseline notebook with a **balanced LGBM/XGB domain
-ensemble** and compare it against `hgb_balanced`. Keep the notebook public and
-submit only the notebook-generated `submission.csv` if the diagnostics look
-better than the current champion.
+Keep the existing public baseline notebook as the main notebook and make only
+small, auditable refinements around the **balanced LGBM/XGB domain ensemble**.
+Do not create a new public notebook unless the baseline notebook becomes too
+large or slow.
 
 ## Implementation Status
 
-The public baseline notebook has been updated for the next run:
+The public baseline notebook v8 completed and was submitted:
 
 - row-safe lifestyle interaction features;
 - balanced HGB with engineered features;
@@ -139,5 +141,5 @@ The public baseline notebook has been updated for the next run:
 - champion selection by balanced accuracy and macro F1;
 - one notebook-generated `submission.csv`.
 
-The run should be submitted only after checking whether the LGBM/XGB ensemble
-or engineered HGB beats the current `0.90603` public champion direction.
+Result: public score `0.94959`, replacing `hgb_balanced` (`0.90603`) as the
+current champion.
