@@ -60,13 +60,18 @@ Do not keep submitting small variants of the same HGB setup.
 
 ## Next Experiment
 
-Create the next notebook as a model comparison notebook:
+Keep the model comparison inside the public baseline notebook instead of
+creating many small public notebooks:
 
 1. Unweighted HGB baseline.
 2. Lightly weighted HGB baseline.
-3. CatBoost with native categorical features.
-4. LightGBM with categorical encoding and missing indicators.
-5. Compare OOF accuracy, macro F1, balanced accuracy, and prediction mix.
+3. Fully balanced HGB baseline as the existing anchor.
+4. Compare OOF accuracy, macro F1, balanced accuracy, and prediction mix.
+5. Generate one champion `submission.csv` from the selected candidate.
+
+After the weighting question is answered, add CatBoost or LightGBM as a new
+section in the same notebook, unless the notebook becomes too slow or hard to
+read.
 
 Only submit the next candidate if it improves the likely leaderboard direction
 without collapsing `fit`/`unhealthy` recall.

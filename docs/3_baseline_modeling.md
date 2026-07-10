@@ -16,15 +16,16 @@ submissions.
 | 5 | XGBoost | Diversity check against LightGBM |
 | 6 | CatBoost | Strong handling of categorical features |
 
-The current public baseline notebook implements step 3 with a stronger
-preprocessing setup than the initial scaffold:
+The public baseline notebook now implements step 3 as a compact comparison
+rather than a single fixed model:
 
 - numeric median imputation with missing-value indicators;
 - categorical most-frequent imputation plus ordinal encoding;
-- class-balanced `HistGradientBoostingClassifier`;
+- unweighted, lightly weighted, and fully balanced
+  `HistGradientBoostingClassifier` candidates;
 - 5-fold stratified validation;
-- accuracy, balanced accuracy, macro F1, weighted F1, confusion matrix, and
-  per-class classification report.
+- accuracy, balanced accuracy, macro F1, weighted F1, prediction mix,
+  confusion matrix, and per-class classification report.
 
 ## Validation
 
@@ -95,5 +96,7 @@ Submission prediction mix:
 | `fit` | `10.39%` |
 
 Decision: good enough for a first leaderboard calibration submission, not a
-champion candidate. The next refinement should compare an unweighted
-accuracy-oriented HGB/CatBoost baseline against this class-balanced baseline.
+champion candidate. The refined baseline notebook now compares unweighted,
+lightly weighted, and fully balanced HGB candidates in the same public
+notebook. This avoids creating extra public notebooks just to answer the class
+weighting question.

@@ -11,4 +11,4 @@ Record every leaderboard submission here.
 | Notebook | Kaggle URL | Status |
 | --- | --- | --- |
 | Student Health Risk - EDA | https://www.kaggle.com/code/tuannm3812/student-health-risk-eda | Version 3 running with structured markdown |
-| Student Health Risk - Baseline Modeling | https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling | Version 4 running with output review |
+| Student Health Risk - Baseline Modeling | https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling | Version 5 running compact HGB weighting comparison |
