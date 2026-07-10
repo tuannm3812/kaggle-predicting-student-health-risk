@@ -111,3 +111,19 @@ notebook-generated submission workflow.
 Do not optimize for local accuracy alone. The failed `hgb_unweighted`
 submission proves that local accuracy can move in the wrong leaderboard
 direction.
+
+## Feature Engineering Direction
+
+The baseline notebook now adds row-safe features before the next public run:
+
+- `missing_count`;
+- `activity_intensity`;
+- `calorie_per_step`;
+- `exercise_per_sleep`;
+- `steps_per_sleep`;
+- `bmi_sleep_interaction`;
+- `activity_sleep_score`;
+- sleep, stress, activity, and lifestyle interaction flags.
+
+These features are intentionally simple and interpretable. They encode the EDA
+signals without using target leakage or external data.

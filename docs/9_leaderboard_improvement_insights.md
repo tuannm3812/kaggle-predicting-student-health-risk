@@ -123,3 +123,16 @@ Extend the existing public baseline notebook with a **CatBoost balanced**
 section and compare it against `hgb_balanced`. Keep the notebook public and
 submit only the notebook-generated `submission.csv` if the diagnostics look
 better than the current champion.
+
+## Implementation Status
+
+The public baseline notebook has been updated for the next run:
+
+- row-safe lifestyle interaction features;
+- balanced HGB with engineered features;
+- balanced CatBoost with native categorical handling;
+- champion selection by balanced accuracy;
+- one notebook-generated `submission.csv`.
+
+The run should be submitted only after checking whether CatBoost or engineered
+HGB beats the current `0.90603` public champion direction.
