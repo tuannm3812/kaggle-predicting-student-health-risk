@@ -130,6 +130,11 @@ small, auditable refinements around the **balanced LGBM/XGB domain ensemble**.
 Do not create a new public notebook unless the baseline notebook becomes too
 large or slow.
 
+The next notebook run adds an **HGB + LGBM/XGB probability blend** before
+calibration and CatBoost signal-engine experiments. The HGB anchor uses a
+different preprocessing path and may capture complementary errors relative to
+the numeric-only LGBM/XGB stack.
+
 ## Implementation Status
 
 The public baseline notebook v8 completed and was submitted:
@@ -163,3 +168,19 @@ Best calibration setting:
 Decision: **do not submit**. The balanced-accuracy gain over v8 is only
 `+0.000014`, while accuracy and macro F1 both move down. This is too small to
 spend a leaderboard submission under the current quota strategy.
+
+## V11 HGB + LGBM/XGB Blend Experiment
+
+Notebook v11 adds a convex probability blend between the balanced HGB anchor and
+the v8 LGBM/XGB ensemble. The HGB weight is selected from OOF balanced accuracy
+over a grid from `0.0` to `1.0`.
+
+Promotion gate (unchanged):
+
+- public score must beat the current `0.94959` champion;
+- balanced-accuracy gain versus v8 LGBM/XGB must be at least `0.0002`;
+- macro F1 must not decrease;
+- `fit` and `unhealthy` prediction shares should not collapse.
+
+Status: **ready for public Kaggle run**. Submit only if the notebook comparison
+table shows the new blend passes the champion gate.
