@@ -130,10 +130,8 @@ small, auditable refinements around the **balanced LGBM/XGB domain ensemble**.
 Do not create a new public notebook unless the baseline notebook becomes too
 large or slow.
 
-The next notebook run adds an **HGB + LGBM/XGB probability blend** before
-calibration and CatBoost signal-engine experiments. The HGB anchor uses a
-different preprocessing path and may capture complementary errors relative to
-the numeric-only LGBM/XGB stack.
+v13 ruled out HGB probability blending as a submission. The next concrete run
+is the **targeted interaction feature** pack on the same LGBM/XGB blend.
 
 ## Implementation Status
 
@@ -169,18 +167,33 @@ Decision: **do not submit**. The balanced-accuracy gain over v8 is only
 `+0.000014`, while accuracy and macro F1 both move down. This is too small to
 spend a leaderboard submission under the current quota strategy.
 
-## V11 HGB + LGBM/XGB Blend Experiment
+## V13 HGB + LGBM/XGB Blend Review
 
-Notebook v11 adds a convex probability blend between the balanced HGB anchor and
-the v8 LGBM/XGB ensemble. The HGB weight is selected from OOF balanced accuracy
-over a grid from `0.0` to `1.0`.
+Notebook v13 tested a convex probability blend between the balanced HGB anchor
+and the v8 LGBM/XGB ensemble. Best OOF weight was **40% HGB / 60% LGBM-XGB**.
 
-Promotion gate (unchanged):
+| Candidate | Accuracy | Balanced Accuracy | Macro F1 | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `calibrated_lgbm_xgb_domain_ensemble` | `0.93726` | **`0.94970`** | `0.86257` | Fail (macro F1 down) |
+| `hgb_lgbm_xgb_domain_blend` | `0.93816` | `0.94968` | `0.86428` | Fail (`+0.000003` bal-acc) |
+| `lgbm_xgb_domain_ensemble` | `0.93746` | `0.94968` | `0.86308` | Base / keep |
+| `catboost_signal_engine` | `0.93746` | `0.94967` | `0.86307` | Fail |
 
-- public score must beat the current `0.94959` champion;
-- balanced-accuracy gain versus v8 LGBM/XGB must be at least `0.0002`;
-- macro F1 must not decrease;
-- `fit` and `unhealthy` prediction shares should not collapse.
+Decision: **do not submit**. The HGB blend gained only `+0.000003` balanced
+accuracy versus v8 — far below the `0.0002` champion gate. Same lesson as v10:
+rounding-level OOF moves are not worth a leaderboard attempt.
 
-Status: **ready for public Kaggle run**. Submit only if the notebook comparison
-table shows the new blend passes the champion gate.
+## Next Hypothesis: Targeted Interaction Features
+
+Because blend-weight and calibration changes failed the gate, the next notebook
+run tests **feature composition**:
+
+- keep domain features as the v8 LGBM/XGB continuity path;
+- add row-safe extras: `sleep_activity_score`, `stress_sleep_risk`,
+  `stress_activity_mismatch`, `bmi_stress_interaction`, `calorie_activity_gap`,
+  `recovery_deficit`, and key missing flags;
+- retrain the same balanced LGBM/XGB blend as `lgbm_xgb_interaction_ensemble`;
+- promote only if the champion gate passes versus `lgbm_xgb_domain_ensemble`.
+
+Status: **scaffolded in the baseline notebook**. Run on Kaggle next; submit
+only if OOF clears the gate and public score beats `0.94959`.
