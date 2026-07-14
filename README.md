@@ -42,7 +42,7 @@ https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling
 The current strategy is to keep the public baseline notebook as the main
 submission artifact and make small, auditable improvements:
 
-1. focused LGBM/XGB hyperparameter search with GPU (Kaggle run in progress);
+1. focused LGBM/XGB hyperparameter search with GPU (v15 OOF failed gate; not submitted);
 2. targeted interaction features (v14 OOF failed champion gate; not submitted);
 3. HGB + LGBM/XGB probability blending (v13 OOF failed; not submitted);
 4. probability/class-prior calibration (v10 reviewed, not submitted);

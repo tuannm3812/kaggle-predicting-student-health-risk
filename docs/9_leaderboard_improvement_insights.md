@@ -216,10 +216,22 @@ Keep `0.94959` public champion locked until a candidate clearly beats the gate.
 
 ## V15 Focused HP Search
 
-Next notebook run tests deeper/longer balanced LGBM/XGB configs on the domain
-feature set, with XGBoost on GPU when available. Failed ablations (HGB blend,
-interaction FE, CatBoost signal) are skipped to save runtime.
+Notebook v15 enabled GPU (`enable_gpu: true`, XGBoost `device=cuda`), skipped
+previously rejected ablations, and searched deeper/longer LGBM/XGB configs on
+the domain feature set.
 
-Candidate: `lgbm_xgb_tuned_domain_ensemble`. Submit only if the champion gate
-passes versus v8 and public score beats `0.94959`.
+Best tuned blend: **LGBM deeper + XGB v8** at **50/50** weight.
+
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `lgbm_xgb_tuned_domain_ensemble` | **`0.94979`** | `+0.000041` | `+0.002594` | Fail |
+| `calibrated_lgbm_xgb_domain_ensemble` | `0.94977` | `+0.000022` | `-0.000299` | Fail |
+| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
+
+Decision: **do not submit**. The HP search is the strongest OOF lift so far
+among failed candidates, but `+0.000041` is still well below the `0.0002` gate.
+
+Next options with a realistic shot at clearing the gate are larger distributional
+changes (e.g., different CV scheme / seed averaging with a material bal-acc
+lift), not another small local grid around the same recipe.
 
