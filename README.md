@@ -42,11 +42,11 @@ https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling
 The current strategy is to keep the public baseline notebook as the main
 submission artifact and make small, auditable improvements:
 
-1. targeted interaction features on the LGBM/XGB blend (next Kaggle run);
-2. HGB + LGBM/XGB probability blending (v13 OOF failed champion gate; not submitted);
-3. probability/class-prior calibration (v10 reviewed, not submitted);
-4. CatBoost signal-engine micro-flips (OOF-gated, champion gate applies);
-5. optional 5-fold rerun for prediction stability.
+1. focused LGBM/XGB hyperparameter or folding/stability work (next hypothesis);
+2. targeted interaction features (v14 OOF failed champion gate; not submitted);
+3. HGB + LGBM/XGB probability blending (v13 OOF failed; not submitted);
+4. probability/class-prior calibration (v10 reviewed, not submitted);
+5. CatBoost signal-engine micro-flips (OOF-gated, champion gate applies).
 
 See `docs/6_submission_manifest.md` and
 `docs/9_leaderboard_improvement_insights.md` for the current leaderboard record

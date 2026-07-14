@@ -130,8 +130,10 @@ small, auditable refinements around the **balanced LGBM/XGB domain ensemble**.
 Do not create a new public notebook unless the baseline notebook becomes too
 large or slow.
 
-v13 ruled out HGB probability blending as a submission. The next concrete run
-is the **targeted interaction feature** pack on the same LGBM/XGB blend.
+v13 ruled out HGB blending and v14 ruled out the small interaction pack.
+Stop spending submissions on rounding-level OOF changes; the next useful move
+is a focused LGBM/XGB hyperparameter or folding/stability experiment with the
+same champion gate.
 
 ## Implementation Status
 
@@ -183,17 +185,31 @@ Decision: **do not submit**. The HGB blend gained only `+0.000003` balanced
 accuracy versus v8 — far below the `0.0002` champion gate. Same lesson as v10:
 rounding-level OOF moves are not worth a leaderboard attempt.
 
-## Next Hypothesis: Targeted Interaction Features
+## V14 Targeted Interaction Features Review
 
-Because blend-weight and calibration changes failed the gate, the next notebook
-run tests **feature composition**:
+Notebook v14 retrained the balanced LGBM/XGB blend on domain features plus a
+small interaction pack (`sleep_activity_score`, `stress_sleep_risk`, mismatch /
+deficit scores, and key missing flags) as `lgbm_xgb_interaction_ensemble`.
 
-- keep domain features as the v8 LGBM/XGB continuity path;
-- add row-safe extras: `sleep_activity_score`, `stress_sleep_risk`,
-  `stress_activity_mismatch`, `bmi_stress_interaction`, `calorie_activity_gap`,
-  `recovery_deficit`, and key missing flags;
-- retrain the same balanced LGBM/XGB blend as `lgbm_xgb_interaction_ensemble`;
-- promote only if the champion gate passes versus `lgbm_xgb_domain_ensemble`.
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `calibrated_lgbm_xgb_domain_ensemble` | **`0.94970`** | `+0.000015` | `-0.000507` | Fail |
+| `lgbm_xgb_interaction_ensemble` | `0.94968` | `+0.000003` | `+0.001221` | Fail |
+| `lgbm_xgb_domain_ensemble` | `0.94968` | — | — | Base / keep |
+| `catboost_signal_engine` | `0.94968` | `-0.000004` | `+0.000006` | Fail |
 
-Status: **scaffolded in the baseline notebook**. Run on Kaggle next; submit
-only if OOF clears the gate and public score beats `0.94959`.
+Decision: **do not submit**. Interaction extras improved macro F1 slightly but
+barely moved balanced accuracy (`+0.000003`), same gate failure mode as v10/v13.
+
+## What To Try Next
+
+Small FE / blend / calibration tweaks have all failed the `0.0002` bal-acc gate.
+Higher-value next ideas:
+
+1. **Focused hyperparameter search** for LGBM/XGB around the v8 setup
+   (depth/leaves/learning rate), still with class balance.
+2. **5-fold (or 5× seed) stability check** before any further submission.
+3. Revisit S6E4-style **rare-class threshold** only if OOF bal-acc gain clears
+   the gate with a held-out fold / seed check.
+
+Keep `0.94959` public champion locked until a candidate clearly beats the gate.
