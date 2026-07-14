@@ -213,3 +213,13 @@ Higher-value next ideas:
    the gate with a held-out fold / seed check.
 
 Keep `0.94959` public champion locked until a candidate clearly beats the gate.
+
+## V15 Focused HP Search
+
+Next notebook run tests deeper/longer balanced LGBM/XGB configs on the domain
+feature set, with XGBoost on GPU when available. Failed ablations (HGB blend,
+interaction FE, CatBoost signal) are skipped to save runtime.
+
+Candidate: `lgbm_xgb_tuned_domain_ensemble`. Submit only if the champion gate
+passes versus v8 and public score beats `0.94959`.
+
