@@ -130,10 +130,11 @@ small, auditable refinements around the **balanced LGBM/XGB domain ensemble**.
 Do not create a new public notebook unless the baseline notebook becomes too
 large or slow.
 
-v13 ruled out HGB blending and v14 ruled out the small interaction pack.
+v13–v17 ruled out HGB blending, interaction FE, focused HP search, multi-seed
+averaging, 5-fold CV, CatBoost diversity blending, and cross-fitted thresholds.
 Stop spending submissions on rounding-level OOF changes; the next useful move
-is a focused LGBM/XGB hyperparameter or folding/stability experiment with the
-same champion gate.
+should change the prediction surface more aggressively under the same champion
+gate.
 
 ## Implementation Status
 
@@ -203,14 +204,14 @@ barely moved balanced accuracy (`+0.000003`), same gate failure mode as v10/v13.
 
 ## What To Try Next
 
-Small FE / blend / calibration tweaks have all failed the `0.0002` bal-acc gate.
-Higher-value next ideas:
+v10–v17 all failed the `0.0002` bal-acc gate, including 5-fold training, CatBoost
+diversity blending, and cross-fitted thresholds. Higher-value next ideas:
 
-1. **Focused hyperparameter search** for LGBM/XGB around the v8 setup
-   (depth/leaves/learning rate), still with class balance.
-2. **5-fold (or 5× seed) stability check** before any further submission.
-3. Revisit S6E4-style **rare-class threshold** only if OOF bal-acc gain clears
-   the gate with a held-out fold / seed check.
+1. **OOF stacking / meta-learner** over LGBM, XGB, CatBoost, and HGB probabilities
+   with a held-out fold for meta fitting.
+2. A **different feature family** than the current domain composites
+   (for example, fold-safe target statistics or stronger ordinal binning).
+3. Keep the champion gate unchanged; do not submit rounding-level OOF moves.
 
 Keep `0.94959` public champion locked until a candidate clearly beats the gate.
 
@@ -234,4 +235,49 @@ among failed candidates, but `+0.000041` is still well below the `0.0002` gate.
 Next options with a realistic shot at clearing the gate are larger distributional
 changes (e.g., different CV scheme / seed averaging with a material bal-acc
 lift), not another small local grid around the same recipe.
+
+## V16 Multi-Seed Averaging
+
+Notebook v16 kept the v8 domain LGBM/XGB recipe and averaged component
+probabilities across seeds `[42, 0, 7, 17, 99]`, then re-swept the blend weight
+on the averaged OOF. Seed `42` reused the already-trained v8 component
+probabilities. GPU was available.
+
+Best averaged blend: **70% LGBM / 30% XGB**.
+
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `lgbm_xgb_multiseed_domain_ensemble` | **`0.94977`** | `+0.000029` | `+0.000441` | Fail |
+| `calibrated_lgbm_xgb_domain_ensemble` | `0.94977` | `+0.000022` | `-0.000299` | Fail |
+| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
+
+Decision: **do not submit**. Seed bagging helped slightly but stayed far below
+the `0.0002` gate. The notebook correctly kept the v8 champion.
+
+## V17 Five-Fold, CatBoost Diversity, Cross-Fitted Thresholds
+
+Notebook v17 disabled multi-seed averaging and tested three larger changes on
+GPU. Champion stayed `lgbm_xgb_domain_ensemble`.
+
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `lgbm_xgb_fivefold_domain_ensemble` | **`0.94977`** | `+0.000028` | `+0.000062` | Fail |
+| `crossfit_threshold_lgbm_xgb` | `0.94977` | `+0.000022` | `-0.000299` | Fail |
+| `lgbm_xgb_catboost_domain_blend` | `0.94975` | `+0.000002` | `+0.000023` | Fail |
+| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
+| `catboost_native_balanced` | `0.94891` | `-0.000836` | `-0.001369` | Fail |
+
+Details:
+
+- best 5-fold blend remained **50/50 LGBM/XGB**;
+- best CatBoost diversity weight was only **0.15**, essentially no lift;
+- cross-fitted multipliers consistently chose `fit=1.08`, `unhealthy=1.00`, but
+  holdout-safe scoring still failed the gate.
+
+Decision: **do not submit**. These larger validation/distributional changes are
+still rounding-level versus v8. The public champion `0.94959` remains locked.
+
+Next ideas should leave the local LGBM/XGB neighborhood more aggressively, for
+example stacked OOF meta-learning with strong diversity constraints, or a
+completely different feature family validated against the same champion gate.
 
