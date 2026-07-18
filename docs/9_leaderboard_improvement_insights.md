@@ -130,11 +130,11 @@ small, auditable refinements around the **balanced LGBM/XGB domain ensemble**.
 Do not create a new public notebook unless the baseline notebook becomes too
 large or slow.
 
-v13–v17 ruled out HGB blending, interaction FE, focused HP search, multi-seed
-averaging, 5-fold CV, CatBoost diversity blending, and cross-fitted thresholds.
-Stop spending submissions on rounding-level OOF changes; the next useful move
-should change the prediction surface more aggressively under the same champion
-gate.
+v13–v18 ruled out HGB blending, interaction FE, focused HP search, multi-seed
+averaging, 5-fold CV, CatBoost diversity blending, cross-fitted thresholds, and
+OOF probability stacking. Stop spending submissions on rounding-level OOF
+changes; the next useful move should change the feature surface under the same
+champion gate.
 
 ## Implementation Status
 
@@ -204,14 +204,9 @@ barely moved balanced accuracy (`+0.000003`), same gate failure mode as v10/v13.
 
 ## What To Try Next
 
-v10–v17 all failed the `0.0002` bal-acc gate, including 5-fold training, CatBoost
-diversity blending, and cross-fitted thresholds. Higher-value next ideas:
-
-1. **OOF stacking / meta-learner** over LGBM, XGB, CatBoost, and HGB probabilities
-   with a held-out fold for meta fitting.
-2. A **different feature family** than the current domain composites
-   (for example, fold-safe target statistics or stronger ordinal binning).
-3. Keep the champion gate unchanged; do not submit rounding-level OOF moves.
+v10–v18 all failed the `0.0002` bal-acc gate. The active notebook experiment is
+**v19 synthetic-geometry feature forge** (ranks, q-bins, group deviations, rank
+composites) retrained with the v8 balanced LGBM/XGB recipe.
 
 Keep `0.94959` public champion locked until a candidate clearly beats the gate.
 
@@ -277,7 +272,41 @@ Details:
 Decision: **do not submit**. These larger validation/distributional changes are
 still rounding-level versus v8. The public champion `0.94959` remains locked.
 
-Next ideas should leave the local LGBM/XGB neighborhood more aggressively, for
-example stacked OOF meta-learning with strong diversity constraints, or a
-completely different feature family validated against the same champion gate.
+## V18 OOF Probability Stacking
+
+Notebook v18 disabled the failed five-fold and cross-fit threshold sweeps, kept
+CatBoost OOF probabilities, and trained a multinomial logistic meta-learner on
+stacked base probabilities from LGBM, XGBoost, HGB, and CatBoost. GPU was
+available.
+
+Best config: `C=0.5`, `class_weight=balanced`, components
+`['catboost', 'hgb', 'lgbm', 'xgb']`.
+
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `calibrated_lgbm_xgb_domain_ensemble` | `0.94977` | `+0.000022` | `-0.000299` | Fail |
+| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
+| `oof_probability_stack` | `0.94962` | `-0.000128` | `+0.000513` | Fail |
+
+Decision: **do not submit**. Stacking hurt balanced accuracy versus v8 while only
+improving macro F1. Convex blends and second-level logistic stacking around the
+same base models appear saturated.
+
+Next ideas should change the feature surface more aggressively under the same
+champion gate.
+
+## V19 Synthetic-Geometry Feature Forge
+
+Notebook v19 adds target-free geometry features inspired by strong public signal-engine
+notebooks, without copying their leaderboard flip engine:
+
+- joint `%` ranks and `q32` bins on numeric columns;
+- group-median deviations (`num__dev__group`);
+- category frequency encodings;
+- rank composites (`wellness_rank_core`, `activity_rank_core`, `body_hydration_rank`).
+
+Candidate: `lgbm_xgb_geometry_ensemble` (domain + geometry, same v8 LGBM/XGB recipe).
+
+Promotion rule unchanged: OOF balanced-accuracy gain `>= 0.0002` versus v8, macro F1
+must not fall, then public score `> 0.94959`.
 

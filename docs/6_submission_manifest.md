@@ -13,4 +13,4 @@ Record every leaderboard submission here.
 | Notebook | Kaggle URL | Status |
 | --- | --- | --- |
 | Student Health Risk - EDA | https://www.kaggle.com/code/tuannm3812/student-health-risk-eda | Version 3 running with structured markdown |
-| Student Health Risk - Baseline Modeling | https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling | Version 17 complete; 5-fold / CatBoost / cross-fit threshold OOF fails gate; v8 champion `0.94959` remains locked |
+| Student Health Risk - Baseline Modeling | https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling | Version 19 running synthetic-geometry LGBM/XGB; v8 champion `0.94959` remains locked |
