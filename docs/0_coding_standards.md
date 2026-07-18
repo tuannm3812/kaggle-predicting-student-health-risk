@@ -77,3 +77,16 @@ or validation.
 
 Do not commit raw Kaggle data, model dumps, prediction arrays, local
 credentials, temporary scripts, or notebook checkpoints.
+
+## Kaggle Submission Method
+
+Prefer submitting via Kaggle's **notebook submission** ("Submit to
+Competition" from within the notebook) over uploading a `submission.csv`
+generated elsewhere. Kaggle re-executes the notebook end-to-end, which
+verifies the leaderboard result actually matches the committed code. See the
+shared `coding-standards/coding_standards.md` (§11) in the GitHub root for
+the full rule.
+
+Before submitting, confirm the notebook version matches what's recorded in
+this project's results doc, and log the submission (version, score, date)
+after it completes.
