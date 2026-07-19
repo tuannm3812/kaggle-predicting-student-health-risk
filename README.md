@@ -43,7 +43,8 @@ The current strategy is to keep the public baseline notebook as the main
 submission artifact and make small, auditable improvements:
 
 1. Fold-safe target encoding of raw categoricals, incl. `gender` for the first
-   time (v20 in progress; see `docs/10_v20_target_encoding_plan.md`);
+   time (v20 OOF failed gate — bal-acc regressed, macro F1 improved; not submitted;
+   see `docs/10_v20_target_encoding_plan.md`);
 2. synthetic-geometry feature forge + v8 LGBM/XGB retrain (v19 OOF failed gate — regressed; not submitted);
 3. OOF stacking / meta-learning across LGBM, XGB, CatBoost, and HGB (v18 OOF failed gate; not submitted);
 4. 5-fold CV, CatBoost diversity blend, and cross-fitted thresholds (v17 OOF failed gate; not submitted);

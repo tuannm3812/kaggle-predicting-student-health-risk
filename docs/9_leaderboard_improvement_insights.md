@@ -351,3 +351,42 @@ Candidate: `lgbm_xgb_target_encoded_ensemble`. Promotion rule unchanged: OOF
 balanced-accuracy gain `>= 0.0002` versus v8, macro F1 must not fall, then
 public score `> 0.94959`.
 
+## V20 Fold-Safe Target Encoding Review
+
+Notebook v20 ran to completion on Kaggle (GPU, 3-fold). Both smoothing values
+in `TARGET_ENCODE_SMOOTHING_GRID` (`20.0`, `50.0`) produced identical results
+to 5 decimal places — expected, not a bug: all six target-encoded columns
+(`diet_type`, `stress_level`, `sleep_quality`, `physical_activity_level`,
+`smoking_alcohol`, `gender`) have only 2-3 levels with hundreds of thousands
+of rows each, so a smoothing prior of 20-50 pseudo-observations is negligible
+against counts that large. The best blend was **100% LGBM / 0% XGB** — the
+first time XGB has contributed zero weight to a champion-track blend.
+
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
+| `lgbm_xgb_target_encoded_ensemble` | `0.94970` | `-0.0000481` | `+0.000711` | Fail |
+| `hgb_balanced_domain` | `0.94928` | `-0.000467` | `+0.001390` | Fail |
+
+Decision: **do not submit**. Balanced accuracy regressed slightly, same
+direction and similar magnitude as v19's geometry forge (`-0.0000227`), but
+unlike v19 (macro F1 `-0.000169`), v20's macro F1 clearly *improved*
+(`+0.000711`) — the first feature-surface attempt where the two metrics move
+in opposite directions instead of together. The champion gate is written
+against balanced accuracy only, so v20 still fails it even though a
+macro-F1-first reviewer might read this run as a mild improvement.
+
+This is worth flagging rather than just logging as another rejection: if a
+future candidate shows this same macro-F1-up / balanced-accuracy-down
+trade-off more strongly, it may be worth deciding explicitly whether the
+promotion gate should stay balanced-accuracy-only, since the public
+leaderboard metric is not confirmed to be balanced accuracy itself (see
+"Core Lesson" above — local CV is not a reliable stand-in for the actual
+public metric).
+
+`lgbm_xgb_domain_ensemble` (v8) remains champion at `0.94959` public.
+`RUN_TARGET_ENCODING` is left enabled (unlike the fully-disabled
+`RUN_GEOMETRY_FORGE`) since the encoder infrastructure
+(`fit_target_encoding` / `apply_target_encoding`) is reusable scaffolding for
+future feature work, but the candidate itself does not replace the champion.
+
