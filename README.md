@@ -42,12 +42,14 @@ https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling
 The current strategy is to keep the public baseline notebook as the main
 submission artifact and make small, auditable improvements:
 
-1. Synthetic-geometry feature forge + v8 LGBM/XGB retrain (v19 active);
-2. OOF stacking / meta-learning across LGBM, XGB, CatBoost, and HGB (v18 OOF failed gate; not submitted);
-3. 5-fold CV, CatBoost diversity blend, and cross-fitted thresholds (v17 OOF failed gate; not submitted);
-4. multi-seed LGBM/XGB probability averaging (v16 OOF failed gate; not submitted);
-5. focused LGBM/XGB hyperparameter search with GPU (v15 OOF failed gate; not submitted);
-6. targeted interaction features (v14 OOF failed champion gate; not submitted).
+1. Fold-safe target encoding of raw categoricals, incl. `gender` for the first
+   time (v20 in progress; see `docs/10_v20_target_encoding_plan.md`);
+2. synthetic-geometry feature forge + v8 LGBM/XGB retrain (v19 OOF failed gate — regressed; not submitted);
+3. OOF stacking / meta-learning across LGBM, XGB, CatBoost, and HGB (v18 OOF failed gate; not submitted);
+4. 5-fold CV, CatBoost diversity blend, and cross-fitted thresholds (v17 OOF failed gate; not submitted);
+5. multi-seed LGBM/XGB probability averaging (v16 OOF failed gate; not submitted);
+6. focused LGBM/XGB hyperparameter search with GPU (v15 OOF failed gate; not submitted);
+7. targeted interaction features (v14 OOF failed champion gate; not submitted).
 
 See `docs/6_submission_manifest.md` and
 `docs/9_leaderboard_improvement_insights.md` for the current leaderboard record

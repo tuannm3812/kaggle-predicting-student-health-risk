@@ -310,3 +310,44 @@ Candidate: `lgbm_xgb_geometry_ensemble` (domain + geometry, same v8 LGBM/XGB rec
 Promotion rule unchanged: OOF balanced-accuracy gain `>= 0.0002` versus v8, macro F1
 must not fall, then public score `> 0.94959`.
 
+## V19 Synthetic-Geometry Feature Forge Review
+
+Notebook v19 ran to completion on Kaggle (GPU, 3-fold, 65 new geometry columns
+on top of the 40 domain numeric columns). Best geometry blend was **50% LGBM /
+50% XGB**, same weight as v8.
+
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
+| `lgbm_xgb_geometry_ensemble` | `0.94972` | `-0.0000227` | `-0.000169` | Fail |
+| `hgb_balanced_domain` | `0.94928` | `-0.000467` | `+0.001390` | Fail |
+
+Decision: **do not submit**. Rank geometry, quantile bins, group-median
+deviations, and frequency encodings made balanced accuracy and macro F1
+*slightly worse*, not better — the first geometry attempt regressed rather
+than saturated. `lgbm_xgb_domain_ensemble` (v8) remains champion at `0.94959`
+public. `RUN_GEOMETRY_FORGE` is now disabled by default in the notebook.
+
+This is the second feature-surface-level change tried (after v14's targeted
+interactions) and the second to fail outright rather than just miss the gate
+by a small margin, which weakens the case that "any feature-surface change"
+is the fix — the next attempt (v20) should bring a change that plausibly adds
+*new information* (measured target-conditional rates, including for `gender`,
+which no prior version has fed to the model at all) rather than another
+transformation of the same numeric columns.
+
+## V20 Fold-Safe Target Encoding
+
+Notebook v20 replaces the guesswork in `ORDERED_MAPS` with fold-safe target
+encoding: for each of `diet_type`, `stress_level`, `sleep_quality`,
+`physical_activity_level`, `smoking_alcohol`, and `gender`, encode the
+smoothed per-class target rate, fit inside each training fold only (see
+`docs/10_v20_target_encoding_plan.md` for the full spec). `gender` reaches
+the model as a real feature for the first time. The domain-ordinal columns
+are kept alongside the new encoding (augment, not replace) for the first
+pass.
+
+Candidate: `lgbm_xgb_target_encoded_ensemble`. Promotion rule unchanged: OOF
+balanced-accuracy gain `>= 0.0002` versus v8, macro F1 must not fall, then
+public score `> 0.94959`.
+
