@@ -44,7 +44,8 @@ submission artifact and make small, auditable improvements:
 
 1. Rounding/precision artifact features on 5 numeric columns, after
    duplicate/near-duplicate row mining was checked and found empty for this
-   dataset (v21 in progress; see `docs/9_leaderboard_improvement_insights.md`);
+   dataset (v21 OOF failed gate — smallest miss yet, essentially flat; not
+   submitted; see `docs/9_leaderboard_improvement_insights.md`);
 2. fold-safe target encoding of raw categoricals, incl. `gender` for the first
    time (v20 OOF failed gate — bal-acc regressed, macro F1 improved; not submitted;
    see `docs/10_v20_target_encoding_plan.md`);

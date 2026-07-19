@@ -436,3 +436,43 @@ fold-safety concern applies) as `lgbm_xgb_precision_ensemble`.
 Promotion rule unchanged: OOF balanced-accuracy gain `>= 0.0002` versus v8,
 macro F1 must not fall, then public score `> 0.94959`.
 
+## V21 Rounding/Precision Artifact Features Review
+
+Notebook v21 ran to completion on Kaggle (GPU, 3-fold, 10 new precision
+columns). Best blend shifted to **70% LGBM / 30% XGB** (every prior version
+picked 50/50 or 100/0 LGBM).
+
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
+| `lgbm_xgb_precision_ensemble` | `0.94972` | `-0.0000243` | `+0.0000969` | Fail |
+| `hgb_balanced_domain` | `0.94928` | `-0.000467` | `+0.001390` | Fail |
+
+Decision: **do not submit**. This is the smallest-magnitude result of the
+three feature-surface experiments — essentially flat, not a clear regression
+like v19 or v20. `lgbm_xgb_domain_ensemble` (v8) remains champion at
+`0.94959` public.
+
+### Pattern across v19-v21
+
+Three structurally different "add genuinely new information" feature
+experiments have now all landed in the same narrow band, all failing the
+`+0.0002` gate:
+
+| Version | Idea | Bal-acc gain | Macro F1 gain |
+| --- | --- | ---: | ---: |
+| v19 | Rank/quantile/deviation geometry | `-0.0000227` | `-0.000169` |
+| v20 | Fold-safe target encoding | `-0.0000481` | `+0.000711` |
+| v21 | Decimal-precision/whole-number flags | `-0.0000243` | `+0.0000969` |
+
+None of these are copies of each other — geometry ranks, measured
+target-conditional rates, and generator-precision artifacts are genuinely
+different information sources — yet all three move balanced accuracy by
+less than `0.00005` in either direction. This is stronger evidence than any
+single result that the **balanced LGBM/XGB-on-domain-features recipe itself
+has converged to a ceiling around `0.9497-0.9498` balanced accuracy**, not
+that the right feature hasn't been found yet. Closing the remaining
+`~0.0015` gap to the public top (`~0.951`) likely needs a change that isn't
+"one more engineered feature on the same two tree models" — see the updated
+recommendations in `README.md`.
+
