@@ -385,8 +385,54 @@ leaderboard metric is not confirmed to be balanced accuracy itself (see
 public metric).
 
 `lgbm_xgb_domain_ensemble` (v8) remains champion at `0.94959` public.
-`RUN_TARGET_ENCODING` is left enabled (unlike the fully-disabled
-`RUN_GEOMETRY_FORGE`) since the encoder infrastructure
-(`fit_target_encoding` / `apply_target_encoding`) is reusable scaffolding for
-future feature work, but the candidate itself does not replace the champion.
+`RUN_TARGET_ENCODING` was initially left enabled as reusable scaffolding, but
+is now disabled by default (`RUN_TARGET_ENCODING = False`) starting v21 to
+keep notebook runtime down, matching how prior rejected sections (HP search,
+geometry forge) were disabled once their result was recorded. The encoder
+helpers (`fit_target_encoding` / `apply_target_encoding`) remain in the
+notebook for reuse.
+
+## V21 Rounding/Precision Artifact Features
+
+Before building another feature-surface experiment, we tested the classic
+Playground-Series lever directly against this dataset: **exact and
+near-duplicate row detection**. It does not apply here.
+
+- Exact duplicates: **zero**. Grouping the combined train+test table (985,841
+  rows) by all 13 feature columns (categoricals + all 7 numeric columns,
+  NaNs filled with a sentinel) yields 985,841 distinct groups — every row is
+  unique.
+- Near duplicates: also effectively absent. Coarsening the numeric columns
+  (round `sleep_duration`/`bmi`/`heart_rate`/`exercise_duration` to whole
+  numbers, `water_intake` to 1 decimal, bucket `calorie_expenditure` into
+  50-unit and `step_count` into 500-unit bins) and regrouping still produces
+  985,837 singleton groups out of 985,839 — essentially 100%. Seven
+  independent-ish continuous numeric columns are high-dimensional enough that
+  rows never collide even under aggressive rounding.
+
+This rules out row-level duplicate mining for this competition; it is not
+the lever it is in some other Playground Series entries.
+
+What the same investigation *did* surface: five numeric columns
+(`sleep_duration`, `bmi`, `water_intake`, `heart_rate`,
+`exercise_duration`) are normally recorded to 1-2 decimal places, but a small
+share of rows land on exact whole numbers. In training data:
+
+| Column | Whole-number share | `fit` rate (whole) | `fit` rate (non-whole) |
+| --- | ---: | ---: | ---: |
+| `sleep_duration` | `0.66%` | `9.26%` | `5.74%` |
+| `bmi` | `0.79%` | `8.02%` | `5.75%` |
+| `water_intake` | `0.97%` | `5.73%` | `5.77%` |
+| `heart_rate` | `10.17%` | `5.94%` | `5.75%` |
+| `exercise_duration` | `12.78%` | `4.82%` | `5.91%` |
+
+`sleep_duration` and `bmi` show a `fit` rate roughly double for whole-number
+rows; `water_intake`/`heart_rate` show little difference; `exercise_duration`
+moves the opposite direction. Mixed, but real enough on two columns to test.
+We add `{col}_decimal_places` and `{col}_is_whole` for all five columns
+(target-free, row-safe, reuses `evaluate_lgbm_xgb_ensemble` directly since no
+fold-safety concern applies) as `lgbm_xgb_precision_ensemble`.
+
+Promotion rule unchanged: OOF balanced-accuracy gain `>= 0.0002` versus v8,
+macro F1 must not fall, then public score `> 0.94959`.
 
