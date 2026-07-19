@@ -13,4 +13,4 @@ Record every leaderboard submission here.
 | Notebook | Kaggle URL | Status |
 | --- | --- | --- |
 | Student Health Risk - EDA | https://www.kaggle.com/code/tuannm3812/student-health-risk-eda | Version 3 running with structured markdown |
-| Student Health Risk - Baseline Modeling | https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling | Versions 19-22 (geometry forge, target encoding, precision features, logistic diversity) all completed and failed the OOF gate; v22's blend sweep chose 0% weight for the diverse model; v8 champion `0.94959` remains locked |
+| Student Health Risk - Baseline Modeling | https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling | Versions 19-23 all completed and failed the OOF gate (v23's native-categorical splits came closest: `+0.000111` bal-acc, still short). Modeling phase closed; v8 champion `0.94959` is final |

@@ -37,35 +37,35 @@ https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling
 - `predictions/`: OOF/test prediction matrices, intentionally ignored.
 - `scratch/`: temporary helper scripts and automation, intentionally ignored.
 
-## Modeling Direction
+## Modeling Phase: Closed
 
-The current strategy is to keep the public baseline notebook as the main
-submission artifact and make small, auditable improvements:
+`lgbm_xgb_domain_ensemble` (v8, public `0.94959`) is the **final champion**.
+After v8 locked in, five further levers were tried and none cleared the
+promotion gate (`>= 0.0002` OOF balanced-accuracy gain, no macro-F1 loss):
 
-1. Native pandas-categorical splits + 5-fold CV, per external research into
-   top public notebooks confirming this recipe's plateau is a documented
-   ceiling, not a modeling gap (v23 in progress — the final planned
-   experiment before closing out the modeling phase; see
-   `docs/9_leaderboard_improvement_insights.md`);
-2. logistic-regression model-family diversity blended into the v8 ensemble,
-   after three feature-surface changes (v19-v21) converged flat (v22 OOF
-   failed gate — blend-weight sweep chose 0% logistic weight, the most
-   decisive rejection yet; not submitted; see
-   `docs/9_leaderboard_improvement_insights.md`);
+1. native pandas-categorical splits + 5-fold CV (v23 — largest positive
+   gain found, `+0.000111`, but still short of the gate; macro F1 fell);
+2. logistic-regression model-family diversity blended into the v8 ensemble
+   (v22 — the blend-weight sweep itself chose 0% weight, the most decisive
+   rejection);
 3. rounding/precision artifact features on 5 numeric columns, after
    duplicate/near-duplicate row mining was checked and found empty for this
-   dataset (v21 OOF failed gate — smallest miss yet, essentially flat; not
-   submitted; see `docs/9_leaderboard_improvement_insights.md`);
-4. fold-safe target encoding of raw categoricals, incl. `gender` for the first
-   time (v20 OOF failed gate — bal-acc regressed, macro F1 improved; not submitted;
-   see `docs/10_v20_target_encoding_plan.md`);
-5. synthetic-geometry feature forge + v8 LGBM/XGB retrain (v19 OOF failed gate — regressed; not submitted);
-6. OOF stacking / meta-learning across LGBM, XGB, CatBoost, and HGB (v18 OOF failed gate; not submitted);
-7. 5-fold CV, CatBoost diversity blend, and cross-fitted thresholds (v17 OOF failed gate; not submitted);
-8. multi-seed LGBM/XGB probability averaging (v16 OOF failed gate; not submitted);
-9. focused LGBM/XGB hyperparameter search with GPU (v15 OOF failed gate; not submitted);
-10. targeted interaction features (v14 OOF failed champion gate; not submitted).
+   dataset (v21 — smallest miss, essentially flat);
+4. fold-safe target encoding of raw categoricals, incl. `gender` for the
+   first time (v20 — bal-acc regressed slightly, macro F1 improved);
+5. synthetic-geometry feature forge (v19 — regressed on both metrics).
+
+Reading the source of several top-scoring public notebooks for this
+competition (`kaggle kernels pull`) confirmed this is a documented ceiling,
+not a gap in this project's modeling: every honest single/few-model public
+approach found (XGBoost, RepLeafGBM, RealMLP, LightGBM) lands in the same
+`0.9496`-`0.9499` band via the same underlying correction
+(`class_weight='balanced'`, which v8 already uses). The visible public
+leaderboard above `~0.951` is predominantly leaderboard-probing and
+shared-submission-file voting rather than a better model — one top-scoring
+notebook we reviewed documents itself explicitly as manual row edits
+against someone else's shared submission file, not a standalone model.
 
 See `docs/6_submission_manifest.md` and
-`docs/9_leaderboard_improvement_insights.md` for the current leaderboard record
-and improvement plan.
+`docs/9_leaderboard_improvement_insights.md` for the full experiment ledger,
+the external-research writeup, and every rejected candidate's numbers.

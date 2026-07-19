@@ -304,6 +304,57 @@ then public score `> 0.94959`. This is the final planned experiment; the
 project closes out at whichever candidate is locked champion after this
 result, regardless of outcome.
 
+## V23 Native Categorical Splits + 5-Fold Review
+
+Notebook v23 ran to completion on Kaggle (GPU, 5-fold, both LGBM and XGB
+trained cleanly on native pandas-categorical columns with no errors). Best
+blend was **50% LGBM / 50% XGB**, same weight as v8.
+
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `lgbm_xgb_native_categorical_ensemble` | `0.94986` | `+0.000111` | `-0.000441` | Fail |
+| `calibrated_lgbm_xgb_domain_ensemble` | `0.94977` | `+0.0000218` | `-0.000299` | Fail |
+| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
+| `hgb_balanced_domain` | `0.94928` | `-0.000467` | `+0.001390` | Fail |
+
+Decision: **do not submit**. This is the largest positive balanced-accuracy
+gain of any candidate tried in this project (`+0.000111`, more than double
+v15's previous best of `+0.000041`), and the only one of the five levers
+(v19-v23) where balanced accuracy moved in the *helpful* direction by a
+non-trivial amount rather than converging flat or being actively rejected.
+It still falls short of the `0.0002` gate, and macro F1 moved the opposite
+direction (`-0.000441`) — the same "gate metric up, other metric down"
+pattern seen in reverse at v20. `lgbm_xgb_domain_ensemble` (v8) remains
+champion at `0.94959` public.
+
+Read together with the external-research finding above: native categorical
+splits are a real, if modest, improvement over the fixed ordinal encoding —
+consistent with `shamsutdinovrad`'s public notebook landing slightly above
+our band using the same technique — but "modest" here means a few
+ten-thousandths, not the difference between our recipe and the visible
+public top. It closes the gap partially, not entirely, and does not change
+the core external-research conclusion.
+
+## Modeling Phase Closed
+
+Per plan, v23 was the final experiment. Five independent levers were
+tried after v8 locked in (v19 geometry, v20 target encoding, v21 precision
+features, v22 logistic diversity, v23 native categorical splits); none
+cleared the promotion gate. **`lgbm_xgb_domain_ensemble` (v8) is the final
+champion: public leaderboard `0.94959`.**
+
+This is not a stalled project — it is a validated ceiling. Reading the
+source of top public notebooks for this competition confirmed our result
+sits inside the same narrow band (`0.9496`-`0.9499`) as every other honest
+single/few-model approach found (XGBoost, RepLeafGBM, RealMLP, LightGBM),
+each independently arriving at the same balanced-accuracy correction we
+already apply via `class_weight='balanced'`. The visible public leaderboard
+above `~0.951` is predominantly leaderboard-probing and shared-submission
+voting rather than a modeling technique this project is missing (see the
+External Research section above for the specific evidence, including a
+top-scoring notebook that documents itself as manual row-edits against a
+shared file, not a model).
+
 ## V15 Focused HP Search
 
 Notebook v15 enabled GPU (`enable_gpu: true`, XGBoost `device=cuda`), skipped
