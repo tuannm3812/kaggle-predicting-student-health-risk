@@ -476,3 +476,27 @@ that the right feature hasn't been found yet. Closing the remaining
 "one more engineered feature on the same two tree models" — see the updated
 recommendations in `README.md`.
 
+## V22 Logistic Regression Model-Family Diversity
+
+v18 already showed that stacking more tree models (LGBM, XGB, HGB, CatBoost)
+over the same feature table adds almost nothing, because they partition the
+feature space the same way and agree with each other. Section 7's HGB blend
+tested convex-blending a different boosting library into the v8 ensemble and
+also failed — but HGB is still a tree model, so that test never actually
+probed architectural diversity, only implementation diversity.
+
+v22 tests a **multinomial logistic regression** (linear decision boundary)
+on the same v8 domain numeric features, imputed/scaled/fit inside each
+training fold only, `class_weight='balanced'` to match every other base
+learner, with a small `C` sweep (`[0.1, 0.3, 1.0, 3.0]`). We evaluate both
+the standalone model (`logistic_balanced_domain`) and a convex blend with
+the v8 LGBM/XGB ensemble (`lgbm_xgb_logistic_domain_blend`), using the exact
+same blend-sweep recipe already used for the (rejected) HGB blend.
+
+A linear model is expected to score noticeably lower than the tree ensemble
+standalone — the interesting number is not its own accuracy but whether
+blending in a genuinely different error pattern moves the ensemble at all.
+
+Promotion rule unchanged: OOF balanced-accuracy gain `>= 0.0002` versus v8,
+macro F1 must not fall, then public score `> 0.94959`.
+
