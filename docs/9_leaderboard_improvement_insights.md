@@ -281,13 +281,28 @@ ordinal columns and was evaluated on a 3-fold recipe).
 v10–v22 all failed the `0.0002` bal-acc gate (see the external-research section
 above for why: this recipe's balanced accuracy has hit the same documented
 ceiling every other honest single/few-model public approach hits on this
-dataset). The one remaining low-risk, evidence-backed lever is **native
-categorical splits** (pass categoricals as pandas `category` dtype to
-LGBM/XGB instead of the fixed `ORDERED_MAPS` ordinal encoding) plus 5-fold
-CV, matching the recipe in `shamsutdinovrad`'s public notebook that reports
-`0.9502`-`0.9504`.
+dataset). **v23 (native categorical splits + 5-fold, below) is the last
+planned experiment before closing out the modeling phase at whichever
+candidate is the locked champion when it completes.**
 
 Keep `0.94959` public champion locked until a candidate clearly beats the gate.
+
+## V23 Native Categorical Splits + 5-Fold
+
+Per the external-research finding above, this tests passing the six raw
+categoricals as native pandas `category` dtype (LGBM auto-detects them;
+XGB via a dedicated `make_xgb_model_categorical` with `enable_categorical=True`)
+alongside the existing v8 domain numeric set, with 5-fold CV instead of 3 -
+matching the recipe in `shamsutdinovrad`'s public notebook
+(`0.9502`-`0.9504` from *default*, untuned LGBM/XGB). Category levels are
+built from the combined train+test table so every fold and the test set
+share identical category->code mappings (target-free, no leakage).
+
+Candidate: `lgbm_xgb_native_categorical_ensemble`. Promotion rule unchanged:
+OOF balanced-accuracy gain `>= 0.0002` versus v8, macro F1 must not fall,
+then public score `> 0.94959`. This is the final planned experiment; the
+project closes out at whichever candidate is locked champion after this
+result, regardless of outcome.
 
 ## V15 Focused HP Search
 

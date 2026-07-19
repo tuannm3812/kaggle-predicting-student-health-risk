@@ -42,24 +42,29 @@ https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling
 The current strategy is to keep the public baseline notebook as the main
 submission artifact and make small, auditable improvements:
 
-1. Logistic-regression model-family diversity blended into the v8 ensemble,
+1. Native pandas-categorical splits + 5-fold CV, per external research into
+   top public notebooks confirming this recipe's plateau is a documented
+   ceiling, not a modeling gap (v23 in progress — the final planned
+   experiment before closing out the modeling phase; see
+   `docs/9_leaderboard_improvement_insights.md`);
+2. logistic-regression model-family diversity blended into the v8 ensemble,
    after three feature-surface changes (v19-v21) converged flat (v22 OOF
    failed gate — blend-weight sweep chose 0% logistic weight, the most
    decisive rejection yet; not submitted; see
    `docs/9_leaderboard_improvement_insights.md`);
-2. rounding/precision artifact features on 5 numeric columns, after
+3. rounding/precision artifact features on 5 numeric columns, after
    duplicate/near-duplicate row mining was checked and found empty for this
    dataset (v21 OOF failed gate — smallest miss yet, essentially flat; not
    submitted; see `docs/9_leaderboard_improvement_insights.md`);
-3. fold-safe target encoding of raw categoricals, incl. `gender` for the first
+4. fold-safe target encoding of raw categoricals, incl. `gender` for the first
    time (v20 OOF failed gate — bal-acc regressed, macro F1 improved; not submitted;
    see `docs/10_v20_target_encoding_plan.md`);
-4. synthetic-geometry feature forge + v8 LGBM/XGB retrain (v19 OOF failed gate — regressed; not submitted);
-5. OOF stacking / meta-learning across LGBM, XGB, CatBoost, and HGB (v18 OOF failed gate; not submitted);
-6. 5-fold CV, CatBoost diversity blend, and cross-fitted thresholds (v17 OOF failed gate; not submitted);
-7. multi-seed LGBM/XGB probability averaging (v16 OOF failed gate; not submitted);
-8. focused LGBM/XGB hyperparameter search with GPU (v15 OOF failed gate; not submitted);
-9. targeted interaction features (v14 OOF failed champion gate; not submitted).
+5. synthetic-geometry feature forge + v8 LGBM/XGB retrain (v19 OOF failed gate — regressed; not submitted);
+6. OOF stacking / meta-learning across LGBM, XGB, CatBoost, and HGB (v18 OOF failed gate; not submitted);
+7. 5-fold CV, CatBoost diversity blend, and cross-fitted thresholds (v17 OOF failed gate; not submitted);
+8. multi-seed LGBM/XGB probability averaging (v16 OOF failed gate; not submitted);
+9. focused LGBM/XGB hyperparameter search with GPU (v15 OOF failed gate; not submitted);
+10. targeted interaction features (v14 OOF failed champion gate; not submitted).
 
 See `docs/6_submission_manifest.md` and
 `docs/9_leaderboard_improvement_insights.md` for the current leaderboard record
