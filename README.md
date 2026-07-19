@@ -43,8 +43,9 @@ The current strategy is to keep the public baseline notebook as the main
 submission artifact and make small, auditable improvements:
 
 1. Logistic-regression model-family diversity blended into the v8 ensemble,
-   after three feature-surface changes (v19-v21) converged flat, proving the
-   recipe itself has plateaued (v22 in progress; see
+   after three feature-surface changes (v19-v21) converged flat (v22 OOF
+   failed gate — blend-weight sweep chose 0% logistic weight, the most
+   decisive rejection yet; not submitted; see
    `docs/9_leaderboard_improvement_insights.md`);
 2. rounding/precision artifact features on 5 numeric columns, after
    duplicate/near-duplicate row mining was checked and found empty for this

@@ -500,3 +500,58 @@ blending in a genuinely different error pattern moves the ensemble at all.
 Promotion rule unchanged: OOF balanced-accuracy gain `>= 0.0002` versus v8,
 macro F1 must not fall, then public score `> 0.94959`.
 
+## V22 Logistic Regression Model-Family Diversity Review
+
+Notebook v22 ran to completion on Kaggle (GPU, 3-fold). Standalone logistic
+regression scored far below the tree ensemble, as expected for a linear
+model (best `C=1.0`):
+
+| Candidate | Balanced Accuracy | Macro F1 | Prediction mix (at-risk / fit / unhealthy) |
+| --- | ---: | ---: | --- |
+| `logistic_balanced_domain` | `0.90823` | `0.74069` | `73.60%` / `12.10%` / `14.29%` |
+| `lgbm_xgb_domain_ensemble` (v8) | `0.94975` | `0.86335` | `80.94%` / `7.37%` / `11.69%` |
+
+The blend sweep is the real result. Balanced accuracy **decreases
+monotonically** as logistic weight increases from 0:
+
+| Logistic weight | Balanced Accuracy | Macro F1 |
+| ---: | ---: | ---: |
+| `0.00` | `0.94975` | `0.86335` |
+| `0.05` | `0.94967` | `0.86380` |
+| `0.10` | `0.94963` | `0.86426` |
+| `0.20` | `0.94933` | `0.86544` |
+| `0.40` | `0.94841` | `0.86677` |
+| `0.50` | `0.94706` | `0.86379` |
+
+The blend-weight sweep itself selects **`logistic_weight = 0.00`** as
+optimal — the OOF search concluded that *any* amount of logistic regression
+blended in makes balanced accuracy strictly worse. Macro F1 rises with
+logistic weight (same opposite-direction pattern as v20's target encoding),
+but the champion gate is balanced-accuracy-only, so `lgbm_xgb_logistic_domain_blend`
+is functionally identical to the untouched base (gain `0.0`) and fails.
+
+Decision: **do not submit**. This is the most decisive rejection of the four
+feature/model experiments (v19-v22): it is not a near-miss or a small
+regression, the optimizer itself chose zero weight for the diverse model.
+Genuine architectural diversity (linear vs. tree) provides no lift here,
+which rules out "insufficient model diversity" as the reason for the
+plateau, not just "insufficient feature information" (v19-v21) or
+"insufficient tree diversity" (v18's CatBoost/HGB stacking).
+
+`lgbm_xgb_domain_ensemble` (v8) remains champion at `0.94959` public.
+`RUN_LOGISTIC_DIVERSITY` stays enabled since the helpers are cheap to run
+and worth keeping visible, but should be disabled once a v23 direction is
+chosen to save runtime, matching the project's convention for rejected
+sections.
+
+Four independent levers — feature surface (geometry, target encoding,
+precision) and model family (logistic diversity) — have now all failed to
+move balanced accuracy by more than `0.00005` in the helpful direction. The
+next candidate levers are qualitatively different from "one more thing
+added to this recipe": pseudo-labeling from confident test predictions, or
+accepting that this recipe is likely at or near its ceiling and the
+remaining `~0.0015` gap to the public top requires a different data
+strategy (e.g. the generator-artifact angle a top public notebook may be
+exploiting, which this project's precision/duplicate check did not find —
+worth revisiting with a more targeted search if pursued).
+
