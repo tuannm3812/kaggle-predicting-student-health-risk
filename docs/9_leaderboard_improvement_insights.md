@@ -202,11 +202,90 @@ deficit scores, and key missing flags) as `lgbm_xgb_interaction_ensemble`.
 Decision: **do not submit**. Interaction extras improved macro F1 slightly but
 barely moved balanced accuracy (`+0.000003`), same gate failure mode as v10/v13.
 
+## External Research: What The Public Leaderboard Actually Reflects
+
+After v19-v22 all converged flat, we pulled and read the source of several
+top-voted/high-scoring public notebooks for this competition (via `kaggle
+kernels pull`) instead of guessing at further experiments. Sources: Georgy
+Mamarin's ["quit chasing ~0.950 like
+everyone"](https://www.kaggle.com/code/georgymamarin/s6e7-quit-chasing-0-950-like-everyone)
+(73 votes, the most directly relevant), `artkomissar`'s "Anchor
+Micro-Corrections" (LB `0.95246`), and `shamsutdinovrad`'s "Zero Tuning:
+Default LGBM & XGB Ensemble" (`0.95021`-`0.95043`).
+
+**The main finding: our plateau is not a gap in our modeling — it is the
+documented, externally-corroborated ceiling for honest single/few-model
+approaches on this data.** Mamarin's notebook tabulates five independent
+approaches, tuned by different people, that all land within `0.0006` of each
+other:
+
+| Approach | Source | Reported score |
+| --- | --- | ---: |
+| XGBoost + prior-correction | Masaya Kawamata | CV `0.94986` |
+| RepLeafGBM + prior-correction | Masaya Kawamata | CV `0.94964` |
+| RealMLP neural net + class weights | Sohail Khan | CV `0.94972` |
+| LightGBM + prior-correction | Georgy Mamarin | OOF `0.9498` → LB `0.94988` |
+| **Our v8 champion** | this project | OOF `0.94975` → LB `0.94959` |
+
+Our champion sits directly inside that band, not behind it, despite using a
+different recipe (domain-ordered encoding + balanced LGBM/XGB blend rather
+than raw-then-prior-corrected LGBM).
+
+**Why this ceiling exists:** the competition is scored on balanced accuracy
+under 15:1 class imbalance, so the entire score is decided by how well the
+two rare classes (`fit`, `unhealthy`) are recalled. There are two equivalent
+"doors into the same room" for fixing that: (a) train-time class weighting
+(`class_weight='balanced'`, what our recipe has used since v8), or (b)
+post-hoc prior-correction on an *unweighted* model's probabilities
+(`argmax(p / class_prior)`, a parameter-free decision rule). Mamarin shows
+both alone land at ~`0.950`; **stacking both over-corrects and costs ~0.045**.
+This directly explains our own v10 calibration-sweep history: every
+multiplier sweep we ran started from an *already balanced-trained* ensemble,
+so there was very little room left to move — we had already taken this door.
+
+**Why the visible public top (`~0.951`-`0.952+`) looks higher:** it is
+largely leaderboard-probing and shared-submission-file voting, not better
+models. Concretely:
+- `artkomissar`'s "Anchor Micro-Corrections" (LB `0.95246`) is explicit in
+  its own header: *"This is a public-LB post-processing notebook, not a
+  standalone honest ML model."* It loads someone else's shared `0.95238.csv`
+  submission and hand-edits 65 specific row IDs, selected externally, with
+  no model attached.
+- Mamarin cites Hikari_30's "consensus of the public top cluster" notebook:
+  three public submissions from the leading band agree on `99.9%+` of rows;
+  majority-voting them actually scored *below* the best single file
+  (`0.95238` vs `0.95245`), and two attempts to improve on that consensus
+  both landed lower still. At `99.9%` agreement, a vote can only move a few
+  hundred rows, which is consistent with iterative public-leaderboard
+  probing rather than a modeling insight.
+- Mamarin's own resampling test shows why: two models that agree on ~99% of
+  rows can trade rank on a single public-sized split purely from which rows
+  land in it. A `0.0006` gap between single models is inside that noise
+  band. This is the same mechanism documented in the prior episode (S6E6):
+  the public #1 team did not finish in the private top 20 at all.
+
+**One genuine (if modest) technique gap, not leaderboard noise:**
+`shamsutdinovrad`'s notebook reports `0.95021`-`0.95043` balanced accuracy
+from `cross_val_score` on **default** LGBM/XGB (no blend-weight sweep, no HP
+search) using the *same* domain-ordered encoding and similar engineered
+ratio features we already use, but with two concrete differences: (1)
+categoricals passed as native pandas `category` dtype so LGBM/XGB choose
+their own categorical splits, instead of our fixed ordinal 0/1/2 mapping,
+and (2) 5-fold CV instead of our 3-fold. This is a plausible, low-risk,
+honest lever we have not tried in this exact form (distinct from v20's
+fold-safe *target* encoding, which augmented rather than replaced the
+ordinal columns and was evaluated on a 3-fold recipe).
+
 ## What To Try Next
 
-v10–v18 all failed the `0.0002` bal-acc gate. The active notebook experiment is
-**v19 synthetic-geometry feature forge** (ranks, q-bins, group deviations, rank
-composites) retrained with the v8 balanced LGBM/XGB recipe.
+v10–v22 all failed the `0.0002` bal-acc gate (see the external-research section
+above for why: this recipe's balanced accuracy has hit the same documented
+ceiling every other honest single/few-model public approach hits on this
+dataset). The one remaining low-risk, evidence-backed lever is **native
+categorical splits** (pass categoricals as pandas `category` dtype to
+LGBM/XGB instead of the fixed `ORDERED_MAPS` ordinal encoding) plus 5-fold
+CV, matching the recipe in `shamsutdinovrad`'s public notebook that reports
+`0.9502`-`0.9504`.
 
 Keep `0.94959` public champion locked until a candidate clearly beats the gate.
 
