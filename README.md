@@ -1,5 +1,12 @@
 # Predicting Student Health Risk
 
+![Predicting Student Health Risk banner](assets/header.png)
+
+[![Kaggle Competition](https://img.shields.io/badge/Kaggle-Playground%20Series%20S6E7-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/competitions/playground-series-s6e7)
+[![Public Score](https://img.shields.io/badge/Public%20Score-0.94959-brightgreen)](docs/6_submission_manifest.md)
+[![Modeling Phase](https://img.shields.io/badge/Modeling%20Phase-Closed-blue)](docs/9_leaderboard_improvement_insights.md)
+[![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)](requirements.txt)
+
 Kaggle Playground Series S6E7 project for predicting student health risk:
 https://www.kaggle.com/competitions/playground-series-s6e7
 
@@ -33,6 +40,7 @@ https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling
 - `docs/`: competition notes, EDA findings, modeling decisions, submission
   manifest, and next-step strategy.
 - `notebooks/`: executable Kaggle/local notebooks.
+- `assets/`: README images (banner).
 - `data/`: local competition files, intentionally ignored.
 - `predictions/`: OOF/test prediction matrices, intentionally ignored.
 - `scratch/`: temporary helper scripts and automation, intentionally ignored.
