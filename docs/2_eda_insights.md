@@ -67,12 +67,63 @@ sleep.
 3. Target class balance.
 4. Numeric and categorical feature grouping.
 5. Missingness profile and missing-count-by-target diagnostics.
-6. Train/test drift quick screen.
-7. Modeling implications.
+6. Feature relevance: mutual information.
+7. Exact train/test duplicate check.
+8. Train/test drift: quick screen + adversarial validation.
+9. Modeling implications.
 
 This structure is intentionally public-notebook friendly: a Kaggle reader can
 skim the markdown and understand why the next baseline uses stratified folds,
 class-balanced diagnostics, and missing-value indicators.
+
+## Feature Relevance (Mutual Information)
+
+Mutual information with `health_condition`, computed on median-imputed
+numerics and category-coded categoricals:
+
+| Feature | Mutual information |
+| --- | ---: |
+| `sleep_duration` | `0.1551` |
+| `stress_level` | `0.1426` |
+| `physical_activity_level` | `0.0560` |
+| `bmi` | `0.0323` |
+| `exercise_duration` | `0.0228` |
+| `step_count` | `0.0221` |
+| `sleep_quality` | `0.0142` |
+| `water_intake` | `0.0092` |
+| `calorie_expenditure` | `0.0063` |
+| `smoking_alcohol` | `0.0057` |
+| `heart_rate` | `0.0048` |
+| `diet_type` | `0.0002` |
+| `gender` | `0.0002` |
+
+`sleep_duration` and `stress_level` lead by a clear margin; `diet_type` and
+`gender` carry almost no independent signal. This matches an independent
+computation from a top-voted public notebook for this competition
+(`georgymamarin/s6e7-quit-chasing-0-950-like-everyone`), which found the same
+two features leading and the same two trailing.
+
+## Exact Train/Test Duplicate Check
+
+Some Playground Series entries are generated from a real source table in a
+way that leaves test rows byte-identical to a train row across every
+feature — in that case the label isn't predicted, it's known outright. This
+does **not** apply here: grouping the combined 985,841 train+test rows by
+every feature column yields 985,841 distinct groups — zero exact duplicates,
+confirmed via two independent implementations (this notebook's groupby check,
+and a byte-identical string-join check reproduced from
+`lucifer19/student-health-signal-engine`, another top public notebook).
+
+## Train/Test Drift: Adversarial Validation
+
+A classifier trained to distinguish train rows from test rows scores
+ROC-AUC `~0.653` (0.50 = indistinguishable) — matching the `~0.65` reported
+independently by `georgymamarin/s6e7-quit-chasing-0-950-like-everyone`. This
+is a mild multivariate shift invisible to single-feature histograms, driven
+mostly by `water_intake`, `physical_activity_level`, `calorie_expenditure`,
+and `bmi` (permutation importance). It is nowhere near the `~0.8+` AUC that
+would justify distrusting a plain stratified split or importance-weighting
+training rows — safe to proceed as this project already has.
 
 ## Baseline Direction
 
