@@ -15,8 +15,13 @@ sections that already match the shared file, so the two don't drift silently.
 
 Use a notebook-first Kaggle workflow with lightweight documentation:
 
-- `notebooks/` for EDA, baseline modeling, tuning, and final submission logic.
+- `notebooks/` for EDA, baseline modeling, tuning, and final submission logic,
+  plus `notebooks/kernels/<name>/` holding each notebook's Kaggle
+  `kernel-metadata.json` (see "Pushing Notebooks To Kaggle" below).
 - `docs/` for durable findings and decisions.
+- `assets/` for README images.
+- `scripts/` for small CLI helpers (e.g. the Kaggle push script), not core
+  logic.
 - `data/` for local Kaggle files. Raw data is ignored.
 - `predictions/` for OOF and test predictions. Generated predictions are
   ignored.
@@ -192,3 +197,15 @@ the full rule.
 Before submitting, confirm the notebook version matches what's recorded in
 this project's results doc, and log the submission (version, score, date)
 after it completes.
+
+## Pushing Notebooks To Kaggle
+
+Each notebook's Kaggle kernel has its own `kernel-metadata.json` under
+`notebooks/kernels/<name>/`. `notebooks/01_eda.ipynb` and
+`notebooks/02_baseline_modeling.ipynb` are the single source of truth; the
+`.ipynb` copies inside `notebooks/kernels/*/` are gitignored and regenerated
+on every push, not maintained by hand.
+
+Push with `scripts/push_kaggle_kernel.sh <eda|baseline>` rather than running
+`kaggle kernels push` directly against a hand-copied file — it copies the
+current notebook into the right kernel folder first, so the two never drift.

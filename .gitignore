@@ -20,10 +20,10 @@ predictions/
 submission.csv
 scratch/
 
-# Staged copy for pushing 01_eda.ipynb as a separate Kaggle kernel
-# (notebooks/01_eda.ipynb is the single source of truth; this is regenerated
-# at push time so the CLI has a notebook file alongside its own metadata)
-notebooks/eda_kernel/*.ipynb
+# Staged notebook copies for `scripts/push_kaggle_kernel.sh` (notebooks/*.ipynb
+# are the single source of truth; these are regenerated at push time so the
+# Kaggle CLI has a notebook file alongside each kernel's own metadata)
+notebooks/kernels/*/*.ipynb
 
 # Python caches
 __pycache__/
