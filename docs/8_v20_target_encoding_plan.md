@@ -2,7 +2,7 @@
 
 **Status: historical.** This spec was fully implemented and reviewed; see
 "V20 Fold-Safe Target Encoding Review" in
-`docs/9_leaderboard_improvement_insights.md` for the result (rejected — OOF
+`docs/7_leaderboard_improvement_insights.md` for the result (rejected — OOF
 balanced accuracy regressed `-0.0000481`, below the promotion gate) and
 `README.md` for how it fits the closed project. Kept as a worked example of
 fold-safe target encoding per `docs/0_coding_standards.md`.
@@ -15,7 +15,7 @@ fold-safe target encoding, as candidate `lgbm_xgb_target_encoded_ensemble`.
 Do not touch v19 (`RUN_GEOMETRY_FORGE`) logic beyond leaving it intact and
 disabled/enabled per its own already-recorded decision. v21-v23 (precision
 features, logistic diversity, native categorical splits) were separate,
-later plans — see `docs/9` for their results.
+later plans — see `docs/7` for their results.
 
 ## 1. Why This Experiment
 
@@ -34,7 +34,7 @@ first time `gender` reaches the model as a feature.
 
 v10, v13, v14, v15, v16, v17, v18 all reweighted or recombined models trained
 on this same domain feature set and all failed the `+0.0002` balanced-accuracy
-gate (see `docs/9_leaderboard_improvement_insights.md`). This is the first
+gate (see `docs/7_leaderboard_improvement_insights.md`). This is the first
 experiment that changes what the categorical *features themselves* encode,
 which is the only lever the ledger hasn't tried yet on the categorical side.
 
@@ -191,11 +191,11 @@ onward — it should already be comparing `geometry_oof` / `ensemble_oof` /
 same comparison table, not a separate ad hoc check.
 
 Apply the existing, unchanged promotion rule from
-`docs/7_submission_quota_strategy.md`:
+`docs/6_submission_quota_strategy.md`:
 
 - OOF balanced accuracy must improve by **at least `+0.0002`** over whichever
   candidate is the locked champion at run time (v8 unless v19 has since been
-  promoted — check `docs/6_submission_manifest.md` before running this, since
+  promoted — check `docs/5_submission_manifest.md` before running this, since
   it may have changed since this plan was written).
 - Macro F1 must not fall.
 - `fit` / `unhealthy` prediction shares must not collapse toward train
@@ -209,11 +209,11 @@ Apply the existing, unchanged promotion rule from
 Whether it passes or fails the gate:
 
 1. Add a "V20 Fold-Safe Target Encoding Review" section to
-   `docs/9_leaderboard_improvement_insights.md`, matching the exact table
+   `docs/7_leaderboard_improvement_insights.md`, matching the exact table
    format used for V15–V18 (candidate, balanced accuracy, gain vs champion,
    macro F1 gain, gate column) plus one sentence on the smoothing value
    selected and whether `gender` carried measurable importance.
-2. If submitted, log it in `docs/6_submission_manifest.md` (date, file,
+2. If submitted, log it in `docs/5_submission_manifest.md` (date, file,
    hypothesis, CV score, public score, decision) and update the public
    notebook version reference in the same file.
 3. Update `README.md`'s "Modeling Direction" numbered list the same way prior

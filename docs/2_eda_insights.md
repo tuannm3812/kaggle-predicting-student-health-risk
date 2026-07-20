@@ -142,7 +142,7 @@ The champion recipe that actually shipped (v8 onward, see
 `docs/3_baseline_modeling.md`) diverged from this in two ways: domain-ordered
 categorical encoding instead of plain ordinal, and 3-fold CV instead of
 5-fold (5-fold was retried once at v17 and gained only `+0.000028` balanced
-accuracy — see `docs/9`, still not worth the added runtime). CatBoost,
+accuracy — see `docs/7`, still not worth the added runtime). CatBoost,
 LightGBM, and XGBoost were all compared against this HGB baseline as
 originally planned here; the full result is the v3→v8 progression documented
 in `docs/3`.

@@ -3,8 +3,8 @@
 ![Predicting Student Health Risk banner](assets/header.png)
 
 [![Kaggle Competition](https://img.shields.io/badge/Kaggle-Playground%20Series%20S6E7-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/competitions/playground-series-s6e7)
-[![Public Score](https://img.shields.io/badge/Public%20Score-0.94959-brightgreen)](docs/6_submission_manifest.md)
-[![Modeling Phase](https://img.shields.io/badge/Modeling%20Phase-Closed-blue)](docs/9_leaderboard_improvement_insights.md)
+[![Public Score](https://img.shields.io/badge/Public%20Score-0.94959-brightgreen)](docs/5_submission_manifest.md)
+[![Modeling Phase](https://img.shields.io/badge/Modeling%20Phase-Closed-blue)](docs/7_leaderboard_improvement_insights.md)
 [![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)](requirements.txt)
 
 Kaggle Playground Series S6E7 project for predicting student health risk:
@@ -77,6 +77,6 @@ shared-submission-file voting rather than a better model — one top-scoring
 notebook we reviewed documents itself explicitly as manual row edits
 against someone else's shared submission file, not a standalone model.
 
-See `docs/6_submission_manifest.md` and
-`docs/9_leaderboard_improvement_insights.md` for the full experiment ledger,
+See `docs/5_submission_manifest.md` and
+`docs/7_leaderboard_improvement_insights.md` for the full experiment ledger,
 the external-research writeup, and every rejected candidate's numbers.

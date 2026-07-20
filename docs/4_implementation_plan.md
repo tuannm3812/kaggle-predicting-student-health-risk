@@ -1,13 +1,15 @@
 # Implementation Plan: Predicting Student Health Risk
 
 **Status: historical.** This is the original day-1 plan, kept as a record of
-starting intent. Actual practice diverged in one notable way: every
-experiment from v3 onward (calibration, blending, feature engineering,
-target encoding, model diversity — see `docs/9`) lived as a config-flagged
-section inside `02_baseline_modeling.ipynb` rather than in the separate
+starting intent (merged with the day-1 model-optimization plan that was
+originally a separate doc — same status, same never-built notebook). Actual
+practice diverged in one notable way: every experiment from v3 onward
+(calibration, blending, feature engineering, target encoding, model
+diversity — see `docs/7`) lived as a config-flagged section inside
+`02_baseline_modeling.ipynb` rather than in the separate
 `03_model_tuning_and_ensemble.ipynb` / `04_hyperparameter_tuning.ipynb`
 notebooks sketched in §4 below; those two were never created. See
-`docs/9_leaderboard_improvement_insights.md` for the final state and
+`docs/7_leaderboard_improvement_insights.md` for the final state and
 `README.md` for the closing summary.
 
 ## 1. Context
@@ -69,7 +71,7 @@ Then update `docs/1_instructions.md`.
 | --- | --- | --- |
 | `01_eda.ipynb` | Data shape, target, drift, missing values, feature types | `docs/2_eda_insights.md` |
 | `02_baseline_modeling.ipynb` | Stratified CV and baseline model comparison | `docs/3_baseline_modeling.md`, OOF predictions |
-| `03_model_tuning_and_ensemble.ipynb` | Tune champion models, validate features, blend/threshold | `docs/4_model_optimization_and_ensemble.md`, `submission.csv` |
+| `03_model_tuning_and_ensemble.ipynb` | Tune champion models, validate features, blend/threshold | §7 below, `submission.csv` |
 | `04_hyperparameter_tuning.ipynb` | Optuna or focused searches for top models | `scratch/best_hyperparameters.json` |
 
 ## 5. Validation Strategy
@@ -102,17 +104,48 @@ Then test:
 - Small OOF blend grids.
 - Logistic regression meta-learner over model probabilities.
 
-## 7. Submission Policy
+## 7. Model Optimization Notes
+
+Planned for the never-built `03_model_tuning_and_ensemble.ipynb`: a compact,
+evidence-driven optimization path similar to the strongest prior episode
+repos — tune the best single models, save OOF predictions, then ensemble
+only when model diversity is visible in validation. Two candidates here
+weren't already covered by §6's "Then test" list:
+
+1. Focused hyperparameter search for LightGBM, CatBoost, and XGBoost (this
+   became v15's HP search, see `docs/7`).
+2. Feature-family validation: raw, categorical-aware, interaction, ratio,
+   and threshold features (this became v14/v19-v21's feature-surface
+   experiments, see `docs/7`).
+
+Anti-overfit rules, followed throughout the project:
+
+- No blind leaderboard sweeps.
+- No target encoding outside folds.
+- No large ensemble unless it beats the best single model in OOF.
+- Every submitted candidate needs a written hypothesis and artifact trace.
+
+Artifact policy: write lightweight diagnostics. Actual filenames written by
+`02_baseline_modeling.ipynb`, gitignored under `predictions/`:
+
+- `baseline_model_comparison.csv`
+- `blend_weight_results.csv`
+- `champion_oof_predictions.csv`
+- `target_encoding_blend_results.csv` (v20)
+- `native_categorical_blend_results.csv` (v23)
+- `submission.csv`
+
+## 8. Submission Policy
 
 Spend submissions like S6E6:
 
 1. Keep a reproducible champion `submission.csv`.
 2. Submit only candidates with a written hypothesis.
-3. Record every public score in `docs/6_submission_manifest.md`.
+3. Record every public score in `docs/5_submission_manifest.md`.
 4. Stop a branch after a materially worse public result.
 5. Avoid repeated alpha/threshold sweeps without new validation evidence.
 
-## 8. First Day Execution Plan
+## 9. First Day Execution Plan
 
 1. Run public Kaggle EDA notebook.
 2. Run public Kaggle baseline notebook.

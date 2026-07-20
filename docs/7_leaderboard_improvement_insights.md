@@ -328,7 +328,7 @@ Notebook v20 replaces the guesswork in `ORDERED_MAPS` with fold-safe target
 encoding: for each of `diet_type`, `stress_level`, `sleep_quality`,
 `physical_activity_level`, `smoking_alcohol`, and `gender`, encode the
 smoothed per-class target rate, fit inside each training fold only (see
-`docs/10_v20_target_encoding_plan.md` for the full spec). `gender` reaches
+`docs/8_v20_target_encoding_plan.md` for the full spec). `gender` reaches
 the model as a real feature for the first time. The domain-ordinal columns
 are kept alongside the new encoding (augment, not replace) for the first
 pass.

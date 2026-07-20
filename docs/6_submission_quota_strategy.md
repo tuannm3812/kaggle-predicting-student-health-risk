@@ -24,14 +24,14 @@ separate steps.
 1. Run notebook and save diagnostics.
 2. Compare candidate vs champion.
 3. Submit at most one candidate per hypothesis.
-4. Log the score immediately in `docs/6_submission_manifest.md`.
+4. Log the score immediately in `docs/5_submission_manifest.md`.
 5. Promote, revise, or reject the hypothesis.
 
 ## Final Champion Gate
 
 **Status: closed.** Final public champion: `0.94959` from the v8 balanced
 LGBM/XGB domain-feature ensemble. This gate stayed in force through v23,
-the last planned experiment; none of v10-v23 cleared it (`docs/9`), so the
+the last planned experiment; none of v10-v23 cleared it (`docs/7`), so the
 project closed with v8 as champion rather than promoting a new one.
 
 For small calibration or threshold-style changes, do not submit unless the OOF

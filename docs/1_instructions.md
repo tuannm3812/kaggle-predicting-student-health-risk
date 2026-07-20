@@ -31,7 +31,7 @@ competition itself states.
 > class and the observed target.
 
 This is an official confirmation, not an inference — every promotion-gate
-decision in `docs/9_leaderboard_improvement_insights.md` optimized the
+decision in `docs/7_leaderboard_improvement_insights.md` optimized the
 right metric from the start.
 
 ### Submission Format
@@ -58,7 +58,7 @@ id,health_condition
 
 This project's own work ran 2026-07-09 through 2026-07-20 — starting 8 days
 into the competition window and closing the modeling phase 11 days before
-the deadline, on its own evidence (`docs/9`) rather than against the clock.
+the deadline, on its own evidence (`docs/7`) rather than against the clock.
 
 ## About The Tabular Playground Series
 
@@ -80,7 +80,7 @@ the deadline, on its own evidence (`docs/9`) rather than against the clock.
 > years ago, and that goal is to produce datasets that have far fewer
 > artifacts.
 
-This directly explains a finding from `docs/9`'s external-research section:
+This directly explains a finding from `docs/7`'s external-research section:
 v21's exact/near-duplicate row check came back completely empty (zero
 duplicates across 985,841 combined rows). That wasn't a failed search — per
 this official statement, newer Playground entries like S6E7 are
@@ -123,7 +123,7 @@ generator artifact than older series entries had.
 | Missing-value pattern | 449,496 train missing cells; 192,642 test missing cells |
 | Target distribution | `at-risk`: 592,561; `unhealthy`: 57,724; `fit`: 39,803 |
 | Competition deadline | July 31, 2026, 11:59 PM UTC (official, see Timeline above). |
-| Daily submission quota | Not stated on the competition page; not needed in practice — only 3 leaderboard submissions were ever made across the whole project (`docs/6`), well under any plausible quota. |
+| Daily submission quota | Not stated on the competition page; not needed in practice — only 3 leaderboard submissions were ever made across the whole project (`docs/5`), well under any plausible quota. |
 
 ## Expected Input Files
 

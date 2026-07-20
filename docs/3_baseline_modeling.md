@@ -154,4 +154,4 @@ encoding the EDA signals (`docs/2`) without target leakage or external data:
 This borrowed the useful modeling lesson from a strong public notebook, but
 used our own validation discipline, feature names, diagnostics, and champion
 selection rule. The result was `lgbm_xgb_domain_ensemble` at v8, public
-`0.94959` — the project's final champion (`docs/9`).
+`0.94959` — the project's final champion (`docs/7`).
