@@ -83,9 +83,9 @@ Per-class OOF recall:
 | `unhealthy` | `0.9345` | `0.5657` | `0.7048` |
 
 The class-balanced HGB baseline intentionally trades majority-class accuracy
-for much higher minority-class recall. This is useful if the competition metric
-rewards class balance, but it may be too aggressive if the official leaderboard
-metric is plain accuracy.
+for much higher minority-class recall. This turned out to be the right
+tradeoff: the official metric is balanced accuracy (`docs/1`), not plain
+accuracy, which is exactly what this baseline optimizes for.
 
 Submission prediction mix:
 
@@ -124,7 +124,7 @@ guardrail.
 
 ## Public Notebook V7 Direction
 
-The next public notebook improves the baseline in one focused direction:
+The v7 notebook improved the baseline in one focused direction:
 
 - keep `hgb_balanced_domain` as the continuity anchor;
 - add **domain-ordered features** instead of raw label-only categoricals;
@@ -133,6 +133,7 @@ The next public notebook improves the baseline in one focused direction:
 - write `baseline_model_comparison.csv`, `blend_weight_results.csv`,
   `champion_oof_predictions.csv`, and `submission.csv`.
 
-This borrows the useful modeling lesson from a strong public notebook, but uses
-our own validation discipline, feature names, diagnostics, and champion
-selection rule.
+This borrowed the useful modeling lesson from a strong public notebook, but
+used our own validation discipline, feature names, diagnostics, and champion
+selection rule. The result was `lgbm_xgb_domain_ensemble` at v8, public
+`0.94959` — the project's final champion (`docs/9`).

@@ -1,5 +1,12 @@
 # Output Insights and Next Steps
 
+**Status: historical.** This narrates the v3 → v5 → v7/v8 progression in the
+order it happened; every "next experiment" / "next notebook" pointer below
+was acted on by the section that follows it, ending at the v8 balanced
+LGBM/XGB domain ensemble (`0.94959`). For what was tried *after* v8 (v10-v23)
+and the project's final closed state, see
+`docs/9_leaderboard_improvement_insights.md` and `README.md`.
+
 ## Notebook Submission Provenance
 
 The first leaderboard result comes from the public Kaggle notebook:

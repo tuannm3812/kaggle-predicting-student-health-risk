@@ -1,14 +1,21 @@
 # V20 Implementation Plan: Fold-Safe Target Encoding
 
-This is an execution spec for a coding assistant (Cursor) to implement directly
-in `notebooks/02_baseline_modeling.ipynb`. It covers one experiment only:
-replacing the hand-picked domain-ordinal categorical maps with proper
+**Status: historical.** This spec was fully implemented and reviewed; see
+"V20 Fold-Safe Target Encoding Review" in
+`docs/9_leaderboard_improvement_insights.md` for the result (rejected — OOF
+balanced accuracy regressed `-0.0000481`, below the promotion gate) and
+`README.md` for how it fits the closed project. Kept as a worked example of
+fold-safe target encoding per `docs/0_coding_standards.md`.
+
+This was an execution spec for a coding assistant (Cursor) to implement
+directly in `notebooks/02_baseline_modeling.ipynb`. It covers one experiment
+only: replacing the hand-picked domain-ordinal categorical maps with proper
 fold-safe target encoding, as candidate `lgbm_xgb_target_encoded_ensemble`.
 
 Do not touch v19 (`RUN_GEOMETRY_FORGE`) logic beyond leaving it intact and
-disabled/enabled per its own already-recorded decision. Do not start on items
-#3–#5 from `docs/9_leaderboard_improvement_insights.md` ("What To Try Next") —
-those are separate, later plans.
+disabled/enabled per its own already-recorded decision. v21-v23 (precision
+features, logistic diversity, native categorical splits) were separate,
+later plans — see `docs/9` for their results.
 
 ## 1. Why This Experiment
 

@@ -12,5 +12,5 @@ Record every leaderboard submission here.
 
 | Notebook | Kaggle URL | Status |
 | --- | --- | --- |
-| Student Health Risk - EDA | https://www.kaggle.com/code/tuannm3812/student-health-risk-eda | Version 3 running with structured markdown |
-| Student Health Risk - Baseline Modeling | https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling | Versions 19-23 all completed and failed the OOF gate (v23's native-categorical splits came closest: `+0.000111` bal-acc, still short). Modeling phase closed; v8 champion `0.94959` is final |
+| Student Health Risk - EDA | https://www.kaggle.com/code/tuannm3812/student-health-risk-eda | Final content pushed and confirmed matching `notebooks/01_eda.ipynb` (2026-07-20): structured markdown flow plus mutual-information, exact-duplicate, and adversarial-validation sections (`docs/2`) |
+| Student Health Risk - Baseline Modeling | https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling | Versions 3 through 23 completed; v10-v23 all failed the OOF promotion gate (v23's native-categorical splits came closest: `+0.000111` bal-acc, still short). Modeling phase closed; v8 champion `0.94959` is final (`docs/9`) |

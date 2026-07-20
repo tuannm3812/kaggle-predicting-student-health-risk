@@ -130,12 +130,6 @@ small, auditable refinements around the **balanced LGBM/XGB domain ensemble**.
 Do not create a new public notebook unless the baseline notebook becomes too
 large or slow.
 
-v13–v18 ruled out HGB blending, interaction FE, focused HP search, multi-seed
-averaging, 5-fold CV, CatBoost diversity blending, cross-fitted thresholds, and
-OOF probability stacking. Stop spending submissions on rounding-level OOF
-changes; the next useful move should change the feature surface under the same
-champion gate.
-
 ## Implementation Status
 
 The public baseline notebook v8 completed and was submitted:
@@ -201,159 +195,6 @@ deficit scores, and key missing flags) as `lgbm_xgb_interaction_ensemble`.
 
 Decision: **do not submit**. Interaction extras improved macro F1 slightly but
 barely moved balanced accuracy (`+0.000003`), same gate failure mode as v10/v13.
-
-## External Research: What The Public Leaderboard Actually Reflects
-
-After v19-v22 all converged flat, we pulled and read the source of several
-top-voted/high-scoring public notebooks for this competition (via `kaggle
-kernels pull`) instead of guessing at further experiments. Sources: Georgy
-Mamarin's ["quit chasing ~0.950 like
-everyone"](https://www.kaggle.com/code/georgymamarin/s6e7-quit-chasing-0-950-like-everyone)
-(73 votes, the most directly relevant), `artkomissar`'s "Anchor
-Micro-Corrections" (LB `0.95246`), and `shamsutdinovrad`'s "Zero Tuning:
-Default LGBM & XGB Ensemble" (`0.95021`-`0.95043`).
-
-**The main finding: our plateau is not a gap in our modeling — it is the
-documented, externally-corroborated ceiling for honest single/few-model
-approaches on this data.** Mamarin's notebook tabulates five independent
-approaches, tuned by different people, that all land within `0.0006` of each
-other:
-
-| Approach | Source | Reported score |
-| --- | --- | ---: |
-| XGBoost + prior-correction | Masaya Kawamata | CV `0.94986` |
-| RepLeafGBM + prior-correction | Masaya Kawamata | CV `0.94964` |
-| RealMLP neural net + class weights | Sohail Khan | CV `0.94972` |
-| LightGBM + prior-correction | Georgy Mamarin | OOF `0.9498` → LB `0.94988` |
-| **Our v8 champion** | this project | OOF `0.94975` → LB `0.94959` |
-
-Our champion sits directly inside that band, not behind it, despite using a
-different recipe (domain-ordered encoding + balanced LGBM/XGB blend rather
-than raw-then-prior-corrected LGBM).
-
-**Why this ceiling exists:** the competition is scored on balanced accuracy
-under 15:1 class imbalance, so the entire score is decided by how well the
-two rare classes (`fit`, `unhealthy`) are recalled. There are two equivalent
-"doors into the same room" for fixing that: (a) train-time class weighting
-(`class_weight='balanced'`, what our recipe has used since v8), or (b)
-post-hoc prior-correction on an *unweighted* model's probabilities
-(`argmax(p / class_prior)`, a parameter-free decision rule). Mamarin shows
-both alone land at ~`0.950`; **stacking both over-corrects and costs ~0.045**.
-This directly explains our own v10 calibration-sweep history: every
-multiplier sweep we ran started from an *already balanced-trained* ensemble,
-so there was very little room left to move — we had already taken this door.
-
-**Why the visible public top (`~0.951`-`0.952+`) looks higher:** it is
-largely leaderboard-probing and shared-submission-file voting, not better
-models. Concretely:
-- `artkomissar`'s "Anchor Micro-Corrections" (LB `0.95246`) is explicit in
-  its own header: *"This is a public-LB post-processing notebook, not a
-  standalone honest ML model."* It loads someone else's shared `0.95238.csv`
-  submission and hand-edits 65 specific row IDs, selected externally, with
-  no model attached.
-- Mamarin cites Hikari_30's "consensus of the public top cluster" notebook:
-  three public submissions from the leading band agree on `99.9%+` of rows;
-  majority-voting them actually scored *below* the best single file
-  (`0.95238` vs `0.95245`), and two attempts to improve on that consensus
-  both landed lower still. At `99.9%` agreement, a vote can only move a few
-  hundred rows, which is consistent with iterative public-leaderboard
-  probing rather than a modeling insight.
-- Mamarin's own resampling test shows why: two models that agree on ~99% of
-  rows can trade rank on a single public-sized split purely from which rows
-  land in it. A `0.0006` gap between single models is inside that noise
-  band. This is the same mechanism documented in the prior episode (S6E6):
-  the public #1 team did not finish in the private top 20 at all.
-
-**One genuine (if modest) technique gap, not leaderboard noise:**
-`shamsutdinovrad`'s notebook reports `0.95021`-`0.95043` balanced accuracy
-from `cross_val_score` on **default** LGBM/XGB (no blend-weight sweep, no HP
-search) using the *same* domain-ordered encoding and similar engineered
-ratio features we already use, but with two concrete differences: (1)
-categoricals passed as native pandas `category` dtype so LGBM/XGB choose
-their own categorical splits, instead of our fixed ordinal 0/1/2 mapping,
-and (2) 5-fold CV instead of our 3-fold. This is a plausible, low-risk,
-honest lever we have not tried in this exact form (distinct from v20's
-fold-safe *target* encoding, which augmented rather than replaced the
-ordinal columns and was evaluated on a 3-fold recipe).
-
-## What To Try Next
-
-v10–v22 all failed the `0.0002` bal-acc gate (see the external-research section
-above for why: this recipe's balanced accuracy has hit the same documented
-ceiling every other honest single/few-model public approach hits on this
-dataset). **v23 (native categorical splits + 5-fold, below) is the last
-planned experiment before closing out the modeling phase at whichever
-candidate is the locked champion when it completes.**
-
-Keep `0.94959` public champion locked until a candidate clearly beats the gate.
-
-## V23 Native Categorical Splits + 5-Fold
-
-Per the external-research finding above, this tests passing the six raw
-categoricals as native pandas `category` dtype (LGBM auto-detects them;
-XGB via a dedicated `make_xgb_model_categorical` with `enable_categorical=True`)
-alongside the existing v8 domain numeric set, with 5-fold CV instead of 3 -
-matching the recipe in `shamsutdinovrad`'s public notebook
-(`0.9502`-`0.9504` from *default*, untuned LGBM/XGB). Category levels are
-built from the combined train+test table so every fold and the test set
-share identical category->code mappings (target-free, no leakage).
-
-Candidate: `lgbm_xgb_native_categorical_ensemble`. Promotion rule unchanged:
-OOF balanced-accuracy gain `>= 0.0002` versus v8, macro F1 must not fall,
-then public score `> 0.94959`. This is the final planned experiment; the
-project closes out at whichever candidate is locked champion after this
-result, regardless of outcome.
-
-## V23 Native Categorical Splits + 5-Fold Review
-
-Notebook v23 ran to completion on Kaggle (GPU, 5-fold, both LGBM and XGB
-trained cleanly on native pandas-categorical columns with no errors). Best
-blend was **50% LGBM / 50% XGB**, same weight as v8.
-
-| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
-| --- | ---: | ---: | ---: | --- |
-| `lgbm_xgb_native_categorical_ensemble` | `0.94986` | `+0.000111` | `-0.000441` | Fail |
-| `calibrated_lgbm_xgb_domain_ensemble` | `0.94977` | `+0.0000218` | `-0.000299` | Fail |
-| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
-| `hgb_balanced_domain` | `0.94928` | `-0.000467` | `+0.001390` | Fail |
-
-Decision: **do not submit**. This is the largest positive balanced-accuracy
-gain of any candidate tried in this project (`+0.000111`, more than double
-v15's previous best of `+0.000041`), and the only one of the five levers
-(v19-v23) where balanced accuracy moved in the *helpful* direction by a
-non-trivial amount rather than converging flat or being actively rejected.
-It still falls short of the `0.0002` gate, and macro F1 moved the opposite
-direction (`-0.000441`) — the same "gate metric up, other metric down"
-pattern seen in reverse at v20. `lgbm_xgb_domain_ensemble` (v8) remains
-champion at `0.94959` public.
-
-Read together with the external-research finding above: native categorical
-splits are a real, if modest, improvement over the fixed ordinal encoding —
-consistent with `shamsutdinovrad`'s public notebook landing slightly above
-our band using the same technique — but "modest" here means a few
-ten-thousandths, not the difference between our recipe and the visible
-public top. It closes the gap partially, not entirely, and does not change
-the core external-research conclusion.
-
-## Modeling Phase Closed
-
-Per plan, v23 was the final experiment. Five independent levers were
-tried after v8 locked in (v19 geometry, v20 target encoding, v21 precision
-features, v22 logistic diversity, v23 native categorical splits); none
-cleared the promotion gate. **`lgbm_xgb_domain_ensemble` (v8) is the final
-champion: public leaderboard `0.94959`.**
-
-This is not a stalled project — it is a validated ceiling. Reading the
-source of top public notebooks for this competition confirmed our result
-sits inside the same narrow band (`0.9496`-`0.9499`) as every other honest
-single/few-model approach found (XGBoost, RepLeafGBM, RealMLP, LightGBM),
-each independently arriving at the same balanced-accuracy correction we
-already apply via `class_weight='balanced'`. The visible public leaderboard
-above `~0.951` is predominantly leaderboard-probing and shared-submission
-voting rather than a modeling technique this project is missing (see the
-External Research section above for the specific evidence, including a
-top-scoring notebook that documents itself as manual row-edits against a
-shared file, not a model).
 
 ## V15 Focused HP Search
 
@@ -704,3 +545,144 @@ strategy (e.g. the generator-artifact angle a top public notebook may be
 exploiting, which this project's precision/duplicate check did not find —
 worth revisiting with a more targeted search if pursued).
 
+## External Research: What The Public Leaderboard Actually Reflects
+
+After v19-v22 all converged flat, we pulled and read the source of several
+top-voted/high-scoring public notebooks for this competition (via `kaggle
+kernels pull`) instead of guessing at further experiments. Sources: Georgy
+Mamarin's ["quit chasing ~0.950 like
+everyone"](https://www.kaggle.com/code/georgymamarin/s6e7-quit-chasing-0-950-like-everyone)
+(73 votes, the most directly relevant), `artkomissar`'s "Anchor
+Micro-Corrections" (LB `0.95246`), and `shamsutdinovrad`'s "Zero Tuning:
+Default LGBM & XGB Ensemble" (`0.95021`-`0.95043`).
+
+**The main finding: our plateau is not a gap in our modeling — it is the
+documented, externally-corroborated ceiling for honest single/few-model
+approaches on this data.** Mamarin's notebook tabulates five independent
+approaches, tuned by different people, that all land within `0.0006` of each
+other:
+
+| Approach | Source | Reported score |
+| --- | --- | ---: |
+| XGBoost + prior-correction | Masaya Kawamata | CV `0.94986` |
+| RepLeafGBM + prior-correction | Masaya Kawamata | CV `0.94964` |
+| RealMLP neural net + class weights | Sohail Khan | CV `0.94972` |
+| LightGBM + prior-correction | Georgy Mamarin | OOF `0.9498` → LB `0.94988` |
+| **Our v8 champion** | this project | OOF `0.94975` → LB `0.94959` |
+
+Our champion sits directly inside that band, not behind it, despite using a
+different recipe (domain-ordered encoding + balanced LGBM/XGB blend rather
+than raw-then-prior-corrected LGBM).
+
+**Why this ceiling exists:** the competition is scored on balanced accuracy
+under 15:1 class imbalance, so the entire score is decided by how well the
+two rare classes (`fit`, `unhealthy`) are recalled. There are two equivalent
+"doors into the same room" for fixing that: (a) train-time class weighting
+(`class_weight='balanced'`, what our recipe has used since v8), or (b)
+post-hoc prior-correction on an *unweighted* model's probabilities
+(`argmax(p / class_prior)`, a parameter-free decision rule). Mamarin shows
+both alone land at ~`0.950`; **stacking both over-corrects and costs ~0.045**.
+This directly explains our own v10 calibration-sweep history: every
+multiplier sweep we ran started from an *already balanced-trained* ensemble,
+so there was very little room left to move — we had already taken this door.
+
+**Why the visible public top (`~0.951`-`0.952+`) looks higher:** it is
+largely leaderboard-probing and shared-submission voting, not better
+models. Concretely:
+- `artkomissar`'s "Anchor Micro-Corrections" (LB `0.95246`) is explicit in
+  its own header: *"This is a public-LB post-processing notebook, not a
+  standalone honest ML model."* It loads someone else's shared `0.95238.csv`
+  submission and hand-edits 65 specific row IDs, selected externally, with
+  no model attached.
+- Mamarin cites Hikari_30's "consensus of the public top cluster" notebook:
+  three public submissions from the leading band agree on `99.9%+` of rows;
+  majority-voting them actually scored *below* the best single file
+  (`0.95238` vs `0.95245`), and two attempts to improve on that consensus
+  both landed lower still. At `99.9%` agreement, a vote can only move a few
+  hundred rows, which is consistent with iterative public-leaderboard
+  probing rather than a modeling insight.
+- Mamarin's own resampling test shows why: two models that agree on ~99% of
+  rows can trade rank on a single public-sized split purely from which rows
+  land in it. A `0.0006` gap between single models is inside that noise
+  band. This is the same mechanism documented in the prior episode (S6E6):
+  the public #1 team did not finish in the private top 20 at all.
+
+**One genuine (if modest) technique gap, not leaderboard noise:**
+`shamsutdinovrad`'s notebook reports `0.95021`-`0.95043` balanced accuracy
+from `cross_val_score` on **default** LGBM/XGB (no blend-weight sweep, no HP
+search) using the *same* domain-ordered encoding and similar engineered
+ratio features we already use, but with two concrete differences: (1)
+categoricals passed as native pandas `category` dtype so LGBM/XGB choose
+their own categorical splits, instead of our fixed ordinal 0/1/2 mapping,
+and (2) 5-fold CV instead of our 3-fold. This is a plausible, low-risk,
+honest lever we have not tried in this exact form (distinct from v20's
+fold-safe *target* encoding, which augmented rather than replaced the
+ordinal columns and was evaluated on a 3-fold recipe).
+
+## V23 Native Categorical Splits + 5-Fold
+
+Per the external-research finding above, this tests passing the six raw
+categoricals as native pandas `category` dtype (LGBM auto-detects them;
+XGB via a dedicated `make_xgb_model_categorical` with `enable_categorical=True`)
+alongside the existing v8 domain numeric set, with 5-fold CV instead of 3 -
+matching the recipe in `shamsutdinovrad`'s public notebook
+(`0.9502`-`0.9504` from *default*, untuned LGBM/XGB). Category levels are
+built from the combined train+test table so every fold and the test set
+share identical category->code mappings (target-free, no leakage).
+
+Candidate: `lgbm_xgb_native_categorical_ensemble`. Promotion rule unchanged:
+OOF balanced-accuracy gain `>= 0.0002` versus v8, macro F1 must not fall,
+then public score `> 0.94959`. This is the final planned experiment; the
+project closes out at whichever candidate is locked champion after this
+result, regardless of outcome.
+
+## V23 Native Categorical Splits + 5-Fold Review
+
+Notebook v23 ran to completion on Kaggle (GPU, 5-fold, both LGBM and XGB
+trained cleanly on native pandas-categorical columns with no errors). Best
+blend was **50% LGBM / 50% XGB**, same weight as v8.
+
+| Candidate | Balanced Accuracy | Gain vs v8 | Macro F1 gain | Gate |
+| --- | ---: | ---: | ---: | --- |
+| `lgbm_xgb_native_categorical_ensemble` | `0.94986` | `+0.000111` | `-0.000441` | Fail |
+| `calibrated_lgbm_xgb_domain_ensemble` | `0.94977` | `+0.0000218` | `-0.000299` | Fail |
+| `lgbm_xgb_domain_ensemble` | `0.94975` | — | — | Base / keep |
+| `hgb_balanced_domain` | `0.94928` | `-0.000467` | `+0.001390` | Fail |
+
+Decision: **do not submit**. This is the largest positive balanced-accuracy
+gain of any candidate tried in this project (`+0.000111`, more than double
+v15's previous best of `+0.000041`), and the only one of the five levers
+(v19-v23) where balanced accuracy moved in the *helpful* direction by a
+non-trivial amount rather than converging flat or being actively rejected.
+It still falls short of the `0.0002` gate, and macro F1 moved the opposite
+direction (`-0.000441`) — the same "gate metric up, other metric down"
+pattern seen in reverse at v20. `lgbm_xgb_domain_ensemble` (v8) remains
+champion at `0.94959` public.
+
+Read together with the external-research finding above: native categorical
+splits are a real, if modest, improvement over the fixed ordinal encoding —
+consistent with `shamsutdinovrad`'s public notebook landing slightly above
+our band using the same technique — but "modest" here means a few
+ten-thousandths, not the difference between our recipe and the visible
+public top. It closes the gap partially, not entirely, and does not change
+the core external-research conclusion.
+
+## Modeling Phase Closed
+
+Per plan, v23 was the final experiment. Five independent levers were
+tried after v8 locked in (v19 geometry, v20 target encoding, v21 precision
+features, v22 logistic diversity, v23 native categorical splits); none
+cleared the promotion gate. **`lgbm_xgb_domain_ensemble` (v8) is the final
+champion: public leaderboard `0.94959`.**
+
+This is not a stalled project — it is a validated ceiling. Reading the
+source of top public notebooks for this competition confirmed our result
+sits inside the same narrow band (`0.9496`-`0.9499`) as every other honest
+single/few-model approach found (XGBoost, RepLeafGBM, RealMLP, LightGBM),
+each independently arriving at the same balanced-accuracy correction we
+already apply via `class_weight='balanced'`. The visible public leaderboard
+above `~0.951` is predominantly leaderboard-probing and shared-submission
+voting rather than a modeling technique this project is missing (see the
+External Research section above for the specific evidence, including a
+top-scoring notebook that documents itself as manual row-edits against a
+shared file, not a model).

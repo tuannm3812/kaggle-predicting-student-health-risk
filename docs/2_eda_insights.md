@@ -127,7 +127,8 @@ training rows — safe to proceed as this project already has.
 
 ## Baseline Direction
 
-`notebooks/02_baseline_modeling.ipynb` now uses a structured baseline:
+**Status: superseded.** This describes the first baseline notebook, before
+domain-ordered encoding or the champion LGBM/XGB ensemble existed:
 
 - median imputation plus missing indicators for numeric features;
 - most-frequent imputation plus ordinal encoding for categoricals;
@@ -137,11 +138,19 @@ training rows — safe to proceed as this project already has.
   and confusion matrix;
 - majority-vote test predictions for the first `submission.csv`.
 
-This is a reliable reference point, not the final modeling direction. The next
-serious notebook should compare CatBoost, LightGBM, and XGBoost against this
-baseline and save OOF probability matrices.
+The champion recipe that actually shipped (v8 onward, see
+`docs/3_baseline_modeling.md`) diverged from this in two ways: domain-ordered
+categorical encoding instead of plain ordinal, and 3-fold CV instead of
+5-fold (5-fold was retried once at v17 and gained only `+0.000028` balanced
+accuracy — see `docs/9`, still not worth the added runtime). CatBoost,
+LightGBM, and XGBoost were all compared against this HGB baseline as
+originally planned here; the full result is the v3→v8 progression documented
+in `docs/3` and `docs/8`.
 
 ## First EDA Checklist
+
+Pre-project checklist that shaped the actual notebook flow above (each item
+maps to a numbered section in `notebooks/01_eda.ipynb`):
 
 - Check IDs and duplicates.
 - Compare train/test distributions for every feature.
@@ -155,7 +164,9 @@ baseline and save OOF probability matrices.
 
 ## Likely Domain Feature Themes
 
-Validate these from actual columns before using them:
+Pre-project hypotheses, validated against actual columns before use. All five
+were confirmed present and became the domain feature set in
+`docs/3_baseline_modeling.md`'s champion recipe:
 
 - Sleep, stress, and physical activity interactions.
 - Diet, BMI, water intake, and lifestyle clusters.

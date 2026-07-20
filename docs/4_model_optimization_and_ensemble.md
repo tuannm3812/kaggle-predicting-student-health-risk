@@ -1,5 +1,15 @@
 # Model Optimization and Ensemble
 
+**Status: historical.** This is the original day-1 optimization plan, kept as
+a record of starting intent; it was never split into its own notebook. Every
+candidate listed below (HP search, feature-family validation, calibration,
+threshold adjustment, OOF blending) was actually tried as a config-flagged
+section inside `02_baseline_modeling.ipynb` — see `docs/9_leaderboard_improvement_insights.md`
+for the full experiment ledger (v10–v23) and `README.md` for the closing
+summary. The "Artifact Policy" filenames below are the planned names, not the
+ones the notebook actually writes — see the corrected list at the end of this
+doc.
+
 ## Objective
 
 Use a compact, evidence-driven optimization path similar to the strongest prior
@@ -26,12 +36,14 @@ only when model diversity is visible in validation.
 
 ## Artifact Policy
 
-Write lightweight diagnostics:
+Write lightweight diagnostics. Actual filenames written by
+`02_baseline_modeling.ipynb`, gitignored under `predictions/`:
 
-- `oof_predictions.csv` or model-specific `.npy` files.
-- `feature_results.csv`.
-- `model_results.csv`.
-- `blend_results.csv`.
-- `submission.csv`.
+- `baseline_model_comparison.csv`
+- `blend_weight_results.csv`
+- `champion_oof_predictions.csv`
+- `target_encoding_blend_results.csv` (v20)
+- `native_categorical_blend_results.csv` (v23)
+- `submission.csv`
 
 Keep raw prediction artifacts ignored by git.
