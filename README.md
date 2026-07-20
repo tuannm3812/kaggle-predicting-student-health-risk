@@ -39,7 +39,10 @@ https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling
 
 - `docs/`: competition notes, EDA findings, modeling decisions, submission
   manifest, and next-step strategy.
-- `notebooks/`: executable Kaggle/local notebooks.
+- `notebooks/`: executable Kaggle/local notebooks, plus `notebooks/kernels/`
+  holding each notebook's Kaggle push config.
+- `scripts/`: `push_kaggle_kernel.sh <eda|baseline>`, a one-command wrapper
+  around `kaggle kernels push` for each notebook.
 - `assets/`: README images (banner).
 - `data/`: local competition files, intentionally ignored.
 - `predictions/`: OOF/test prediction matrices, intentionally ignored.

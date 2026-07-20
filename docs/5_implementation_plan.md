@@ -1,5 +1,15 @@
 # Implementation Plan: Predicting Student Health Risk
 
+**Status: historical.** This is the original day-1 plan, kept as a record of
+starting intent. Actual practice diverged in one notable way: every
+experiment from v3 onward (calibration, blending, feature engineering,
+target encoding, model diversity — see `docs/9`) lived as a config-flagged
+section inside `02_baseline_modeling.ipynb` rather than in the separate
+`03_model_tuning_and_ensemble.ipynb` / `04_hyperparameter_tuning.ipynb`
+notebooks sketched in §4 below; those two were never created. See
+`docs/9_leaderboard_improvement_insights.md` for the final state and
+`README.md` for the closing summary.
+
 ## 1. Context
 
 This project targets Kaggle Playground Series S6E7:
