@@ -87,13 +87,19 @@ for much higher minority-class recall. This turned out to be the right
 tradeoff: the official metric is balanced accuracy (`docs/1`), not plain
 accuracy, which is exactly what this baseline optimizes for.
 
-Submission prediction mix:
+Prediction mix, OOF vs. test (closely aligned, which is good — both predict
+minority classes at almost double their training prevalence):
 
-| Predicted class | Share |
-| --- | ---: |
-| `at-risk` | `75.71%` |
-| `unhealthy` | `13.90%` |
-| `fit` | `10.39%` |
+| Split | `at-risk` | `fit` | `unhealthy` |
+| --- | ---: | ---: | ---: |
+| Train target | `85.87%` | `5.77%` | `8.36%` |
+| OOF predictions | `75.65%` | `10.53%` | `13.82%` |
+| Test submission | `75.71%` | `10.39%` | `13.90%` |
+
+Submitted as the public v3 notebook's output
+(https://www.kaggle.com/code/tuannm3812/student-health-risk-baseline-modeling),
+public score `0.90603`; the positive OOF-vs-public gap meant this first probe
+didn't expose a validation collapse.
 
 Decision: good enough for a first leaderboard calibration submission, not a
 champion candidate. The refined baseline notebook now compares unweighted,
@@ -132,6 +138,18 @@ The v7 notebook improved the baseline in one focused direction:
 - sweep LGBM/XGB probability blend weights by OOF balanced accuracy;
 - write `baseline_model_comparison.csv`, `blend_weight_results.csv`,
   `champion_oof_predictions.csv`, and `submission.csv`.
+
+The row-safe features actually added, intentionally simple and interpretable,
+encoding the EDA signals (`docs/2`) without target leakage or external data:
+
+- `missing_count`;
+- `activity_intensity`;
+- `calorie_per_step`;
+- `exercise_per_sleep`;
+- `steps_per_sleep`;
+- `bmi_sleep_interaction`;
+- `activity_sleep_score`;
+- sleep, stress, activity, and lifestyle interaction flags.
 
 This borrowed the useful modeling lesson from a strong public notebook, but
 used our own validation discipline, feature names, diagnostics, and champion

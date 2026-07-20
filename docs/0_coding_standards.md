@@ -47,10 +47,21 @@ every parameter tweak or rejected OOF variant (those stay inside
 - `5_implementation_plan.md`
 - `6_submission_manifest.md`
 - `7_submission_quota_strategy.md`
-- `8_output_insights_next_steps.md`
+- `8` — retired. Duplicated `docs/3`'s v3/v5 validation tables and v7/v8
+  direction under a different narrative framing; its few unique facts (OOF
+  vs. test prediction mix, the actual v7 feature list) were folded into
+  `docs/3` and the file was deleted. Number left unused rather than
+  renumbering `9`/`10`, which are referenced throughout the project.
 - `9_leaderboard_improvement_insights.md`
-- `10_v20_target_encoding_plan.md` (and further `1N_*` plans, one per
-  promoted experiment)
+- `10_v20_target_encoding_plan.md`: a pre-written implementation spec, not a
+  result doc — v20 was rejected like every other post-v8 experiment
+  (`docs/9`). It exists because target encoding is target-derived and
+  couldn't reuse the notebook's existing target-free feature pattern, so it
+  needed a genuinely new fold-safe evaluation function spelled out before
+  implementation, unlike v19/v21/v22/v23 (target-free or a drop-in model
+  swap), which needed only a `docs/9` ledger entry. Reserve a further `1N_*`
+  doc only when an experiment needs this kind of pre-implementation spec —
+  most rejected OOF variants belong in `docs/9`'s running ledger instead.
 
 Notebook naming: `01_eda.ipynb`, `02_baseline_modeling.ipynb`. Every
 experiment since v3 (calibration, blends, HP search, multi-seed, 5-fold,

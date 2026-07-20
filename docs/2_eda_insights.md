@@ -145,7 +145,7 @@ categorical encoding instead of plain ordinal, and 3-fold CV instead of
 accuracy — see `docs/9`, still not worth the added runtime). CatBoost,
 LightGBM, and XGBoost were all compared against this HGB baseline as
 originally planned here; the full result is the v3→v8 progression documented
-in `docs/3` and `docs/8`.
+in `docs/3`.
 
 ## First EDA Checklist
 
