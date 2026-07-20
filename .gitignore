@@ -11,11 +11,9 @@ env/
 .idea/
 .DS_Store
 
-# Kaggle data
-data/train.csv
-data/test.csv
-data/sample_submission.csv
-data/*.zip
+# Kaggle data (includes partial-download temp files, e.g. .*.zip.XXXXXX
+# left behind by an interrupted `kaggle competitions download`)
+data/*
 
 # Generated artifacts
 predictions/
