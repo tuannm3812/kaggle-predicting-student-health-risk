@@ -1,95 +1,118 @@
 # Competition Instructions
 
+Transcribed directly from the competition's Overview/Data pages
+(2026-07-20). Kaggle operational troubleshooting (access errors, CLI PATH
+issues, why the page can't be fetched by URL) lives in
+`docs/0_coding_standards.md` instead — this doc stays limited to what the
+competition itself states.
+
 ## Competition
 
 - Name: Predicting Student Health Risk
 - Series: Kaggle Playground Series S6E7
 - URL: https://www.kaggle.com/competitions/playground-series-s6e7
-- Deadline: **2026-07-31 23:59** (confirmed via `kaggle competitions list -s
-  playground-series-s6e7`, not the competition page — see the note under
-  "Official Competition Instructions" below on why the page itself isn't a
-  usable source here).
-- Category: Playground · Reward: Swag · Teams: 2,272 (as of 2026-07-20).
-- Public leaderboard top: `0.95300` (as of 2026-07-20, via
-  `kaggle competitions leaderboard -s`) — already above the `~0.951` figure
-  used throughout `docs/9`; consistent with that doc's own finding that the
-  visible top keeps floating upward from shared-submission voting, not
-  better models. Re-check before trusting the `~0.951` reference elsewhere.
+- Citation: Yao Yan, Walter Reade, Elizabeth Park. *Predicting Student
+  Health Risk.* https://kaggle.com/competitions/playground-series-s6e7,
+  2026. Kaggle.
+- License: Attribution 4.0 International (CC BY 4.0)
 
-## Official Competition Instructions
+## Overview
 
-**Not filled in from the competition page itself.** Kaggle competition pages
-are fully client-side-rendered (React SPA) — both `WebFetch` and a raw
-`curl` only return an empty page shell (confirmed 2026-07-20; the HTML has
-no server-rendered content, just a `<title>` and a generic meta
-description). The Kaggle CLI/API has no endpoint for the Overview/
-Evaluation/Rules prose either — `kaggle competitions list/leaderboard` only
-return structured metadata (deadline, team count, scores), which is why
-those are the only page-sourced facts above.
+> Welcome to the 2026 Kaggle Playground Series! We plan to continue in the
+> spirit of previous playgrounds, providing interesting and approachable
+> datasets for our community to practice their machine learning skills, and
+> anticipate a competition each month.
+>
+> Your Goal: Predicting student health risk.
 
-If this section matters going forward (e.g. reopening the modeling phase,
-or reusing this doc as a template for a future competition), paste the
-actual text from these tabs on the competition page here:
+## Evaluation
 
-- **Overview / Description** — the task framing in the competition's own
-  words.
-- **Evaluation** — the official metric name and formula, if stated. This
-  project inferred `balanced accuracy` indirectly (OOF balanced accuracy
-  tracked the public score almost exactly across every submission, e.g.
-  v8's `0.94975` OOF → `0.94959` LB, and every top public notebook reviewed
-  in `docs/9` optimizes the same metric) — worth confirming against the
-  actual page text rather than relying on that inference alone.
-- **Submission Format** — the exact required CSV header/shape, if stated
-  beyond what's already inferred from `sample_submission.csv` below.
-- **Rules** — team limits, submission limits, external-data restrictions,
-  and anything relevant to what this project's own guardrails
-  (`docs/7_submission_quota_strategy.md`) should actually be checked
-  against instead of assumed.
+> Submissions are evaluated on **balanced accuracy** between the predicted
+> class and the observed target.
 
-## Kaggle Access Troubleshooting
+This is an official confirmation, not an inference — every promotion-gate
+decision in `docs/9_leaderboard_improvement_insights.md` optimized the
+right metric from the start.
 
-Reusable diagnosis for the CLI/API friction this project hit, not just a
-log of what happened once — useful again for this project or the next one.
+### Submission Format
 
-**Symptom: `kaggle competitions download` returns `403 Forbidden`, but
-`kaggle competitions files` works fine with the same credentials.**
+> For each `id` in the test set, you must predict a label (`at-risk`,
+> `unhealthy`, `fit`) for the `health_condition` variable. The file should
+> contain a header and have the following format:
 
-- Cause: valid API credentials are not the same as competition access.
-  Kaggle requires the account to explicitly accept the competition's rules
-  through the web UI before the API will serve the data files, even though
-  read-only metadata calls (like listing files) don't require that
-  acceptance.
-- Fix: open the competition page in a browser, click "Join Competition" /
-  accept the rules, then retry the download. No credential change needed.
-
-**Symptom: `kaggle: command not found`.**
-
-- Cause: the Kaggle CLI installed via `pip install --user` isn't on the
-  default `PATH` in this environment.
-- Fix: use the full path directly, or add it to `PATH` once for the
-  session: `/Users/tuannm3812/Library/Python/3.9/bin/kaggle`. Every command
-  in this doc and in `docs/0`'s Kaggle-push guidance already uses the full
-  path for this reason.
-
-**Verifying access works**, once both are resolved:
-
-```bash
-/Users/tuannm3812/Library/Python/3.9/bin/kaggle competitions files playground-series-s6e7
-/Users/tuannm3812/Library/Python/3.9/bin/kaggle competitions download -c playground-series-s6e7 -p data
-unzip data/playground-series-s6e7.zip -d data
+```
+id,health_condition
+690088,at-risk
+690089,at-risk
+690090,at-risk
 ```
 
-This worked without issue for the whole project after the initial rule
-acceptance (v3 through the final v25 verification run) — the notebook-based
-Kaggle kernel pushes also depend on the same rule acceptance, so if a
-future kernel push starts failing to read competition data, check this
-first before assuming a code or credential problem.
+## Timeline
+
+- Start Date: July 1, 2026
+- Entry Deadline: same as Final Submission Deadline
+- Team Merger Deadline: same as Final Submission Deadline
+- **Final Submission Deadline: July 31, 2026**
+- All deadlines are 11:59 PM UTC on the stated day unless otherwise noted;
+  organizers reserve the right to update the timeline.
+
+This project's own work ran 2026-07-09 through 2026-07-20 — starting 8 days
+into the competition window and closing the modeling phase 11 days before
+the deadline, on its own evidence (`docs/9`) rather than against the clock.
+
+## About The Tabular Playground Series
+
+> The goal of the Tabular Playground Series is to provide the Kaggle
+> community with a variety of fairly light-weight challenges that can be
+> used to learn and sharpen skills in different aspects of machine learning
+> and data science. The duration of each competition will generally only
+> last a few weeks... The challenges will generally use fairly light-weight
+> datasets that are synthetically generated from real-world data, and will
+> provide an opportunity to quickly iterate through various model and
+> feature engineering ideas, create visualizations, etc.
+
+### Synthetically-Generated Datasets
+
+> Using synthetic data for Playground competitions allows us to strike a
+> balance between having real-world data (with named features) and
+> ensuring test labels are not publicly available... the state-of-the-art
+> is much better now than when we started the Tabular Playground Series six
+> years ago, and that goal is to produce datasets that have far fewer
+> artifacts.
+
+This directly explains a finding from `docs/9`'s external-research section:
+v21's exact/near-duplicate row check came back completely empty (zero
+duplicates across 985,841 combined rows). That wasn't a failed search — per
+this official statement, newer Playground entries like S6E7 are
+deliberately engineered to have fewer of exactly that kind of exploitable
+generator artifact than older series entries had.
+
+## Dataset Description
+
+> The dataset for this competition (both train and test) was inspired by
+> the **College Student Health Behavior Dataset**. Feature distributions
+> are close to, but not exactly the same, as the original.
+
+### Files
+
+- `train.csv` — the training set, with `health_condition` as target
+- `test.csv` — the test set, used to predict the category for
+  `health_condition`
+- `sample_submission.csv` — a sample submission file in the correct format
+
+3 files, 91.71 MB total, CSV.
+
+## Prizes
+
+> 1st/2nd/3rd Place — choice of Kaggle merchandise. Kaggle merchandise is
+> only awarded once per person across the series, to encourage broader
+> participation from beginners.
 
 ## Items Confirmed From Local Data
 
 | Item | Status |
 | --- | --- |
-| Evaluation metric | Balanced accuracy — inferred, not yet confirmed against the official page text (see above). |
+| Evaluation metric | Balanced accuracy — official (see Evaluation above). |
 | Target column | `health_condition` |
 | Submission column name | `health_condition` (two-column submission: `id`, `health_condition`) |
 | Train file | `train.csv`, 62.7 MB, 690,088 rows |
@@ -99,8 +122,8 @@ first before assuming a code or credential problem.
 | Test row count | 295,753 |
 | Missing-value pattern | 449,496 train missing cells; 192,642 test missing cells |
 | Target distribution | `at-risk`: 592,561; `unhealthy`: 57,724; `fit`: 39,803 |
-| Competition deadline | `2026-07-31 23:59` — confirmed via API (see "Competition" above). |
-| Daily submission quota | Not confirmed against the official page; not needed in practice — only 3 leaderboard submissions were ever made across the whole project (`docs/6`), well under any plausible quota. |
+| Competition deadline | July 31, 2026, 11:59 PM UTC (official, see Timeline above). |
+| Daily submission quota | Not stated on the competition page; not needed in practice — only 3 leaderboard submissions were ever made across the whole project (`docs/6`), well under any plausible quota. |
 
 ## Expected Input Files
 

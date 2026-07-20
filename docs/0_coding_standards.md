@@ -209,3 +209,48 @@ on every push, not maintained by hand.
 Push with `scripts/push_kaggle_kernel.sh <eda|baseline>` rather than running
 `kaggle kernels push` directly against a hand-copied file — it copies the
 current notebook into the right kernel folder first, so the two never drift.
+
+## Kaggle Access Troubleshooting
+
+Reusable diagnosis for CLI/API friction, not specific to this competition —
+useful again for this project or the next one.
+
+**Symptom: `kaggle competitions download` returns `403 Forbidden`, but
+`kaggle competitions files` works fine with the same credentials.**
+
+- Cause: valid API credentials are not the same as competition access.
+  Kaggle requires the account to explicitly accept the competition's rules
+  through the web UI before the API will serve the data files, even though
+  read-only metadata calls (like listing files) don't require that
+  acceptance.
+- Fix: open the competition page in a browser, click "Join Competition" /
+  accept the rules, then retry the download. No credential change needed.
+
+**Symptom: `kaggle: command not found`.**
+
+- Cause: the Kaggle CLI installed via `pip install --user` isn't on the
+  default `PATH` in this environment.
+- Fix: use the full path directly, or add it to `PATH` once for the
+  session: `/Users/tuannm3812/Library/Python/3.9/bin/kaggle`. Every Kaggle
+  command in this project's docs and scripts already uses the full path for
+  this reason.
+
+**Verifying access works**, once both are resolved:
+
+```bash
+/Users/tuannm3812/Library/Python/3.9/bin/kaggle competitions files <competition-slug>
+/Users/tuannm3812/Library/Python/3.9/bin/kaggle competitions download -c <competition-slug> -p data
+```
+
+The notebook-based Kaggle kernel pushes also depend on the same rule
+acceptance, so if a kernel push starts failing to read competition data,
+check rule acceptance first before assuming a code or credential problem.
+
+**Kaggle competition pages are not fetchable by URL.** Both `WebFetch` and a
+raw `curl` only return an empty client-rendered shell (confirmed
+2026-07-20) — the Overview/Evaluation/Rules text requires a real browser.
+The Kaggle CLI/API has no endpoint for that prose either; `kaggle
+competitions list/leaderboard` only return structured metadata (deadline,
+team count, scores). If official competition text is needed in a project's
+`docs/1_instructions.md`, ask the user to paste it rather than attempting
+to fetch it.

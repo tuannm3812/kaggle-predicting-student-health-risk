@@ -524,10 +524,14 @@ macro-F1-first reviewer might read this run as a mild improvement.
 This is worth flagging rather than just logging as another rejection: if a
 future candidate shows this same macro-F1-up / balanced-accuracy-down
 trade-off more strongly, it may be worth deciding explicitly whether the
-promotion gate should stay balanced-accuracy-only, since the public
-leaderboard metric is not confirmed to be balanced accuracy itself (see
-"Core Lesson" above — local CV is not a reliable stand-in for the actual
-public metric).
+promotion gate should stay balanced-accuracy-only. The competition page
+(`docs/1`) confirms the official metric *is* balanced accuracy, so the gate
+is measuring the right thing — but "right metric" and "reliable estimate of
+it" are different claims: OOF balanced accuracy and public-LB balanced
+accuracy can still diverge from sampling/distribution differences between
+the local folds and the hidden public split (see "Core Lesson" above, the
+v5 unweighted-HGB case, where both numbers used the correct metric and
+still disagreed sharply).
 
 `lgbm_xgb_domain_ensemble` (v8) remains champion at `0.94959` public.
 `RUN_TARGET_ENCODING` was initially left enabled as reusable scaffolding, but
